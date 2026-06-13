@@ -2,6 +2,8 @@
 
 A Windows desktop monitoring widget with real-time hardware metrics and Claude Code hook LED indicator.
 
+<img width="463" height="364" alt="PixPin_2026-06-13_19-40-09" src="https://github.com/user-attachments/assets/ff76e92f-a932-449c-ae15-31b27944fd02" />
+
 [中文文档](README.zh-CN.md)
 
 [![.NET 8](https://img.shields.io/badge/.NET-8-blue)](https://dotnet.microsoft.com/)
