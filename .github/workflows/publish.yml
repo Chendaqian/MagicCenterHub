@@ -30,14 +30,13 @@ jobs:
       - name: Publish
         run: dotnet publish src/MagicCenterHub --configuration Release --no-restore --output ./publish
 
+      - name: Package
+        run: Compress-Archive -Path publish/* -DestinationPath MagicCenterHub.zip
+
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            publish/MagicCenterHub.exe
-            publish/*.dll
-            publish/Resources/MagicCenterHub.ico
-            publish/Resources/Claude.png
+          files: MagicCenterHub.zip
           generate_release_notes: true
