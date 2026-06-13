@@ -8,25 +8,16 @@ namespace MagicCenterHub.Effects;
 public class BothOffEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs) => new();
 }
@@ -37,25 +28,16 @@ public class BothOffEffect : ILedEffect
 public class BothFlashEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -75,25 +57,16 @@ public class BothFlashEffect : ILedEffect
 public class GreenFlashEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -113,25 +86,16 @@ public class GreenFlashEffect : ILedEffect
 public class RedFlashEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -151,25 +115,16 @@ public class RedFlashEffect : ILedEffect
 public class YellowFlashEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -189,25 +144,16 @@ public class YellowFlashEffect : ILedEffect
 public class GreenOnEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs) => new()
     {
@@ -223,25 +169,16 @@ public class GreenOnEffect : ILedEffect
 public class RedOnEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs) => new()
     {
@@ -257,25 +194,16 @@ public class RedOnEffect : ILedEffect
 public class YellowOnEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs) => new()
     {
@@ -291,25 +219,16 @@ public class YellowOnEffect : ILedEffect
 public class BothOnEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs) => new()
     {
@@ -325,26 +244,15 @@ public class BothOnEffect : ILedEffect
 public class PoliceAltEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         bool phase = (elapsedMs / 300) % 2 == 0;
@@ -366,29 +274,15 @@ public class HeartbeatEffect : ILedEffect
     private static readonly int[] Pattern = [80, 100, 80, 600];
 
     /// <summary>
-
-
     /// 重置灯效状态
-
-
     /// </summary>
-
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         long cycleMs = 0;
@@ -425,28 +319,15 @@ public class SosEffect : ILedEffect
     ];
 
     /// <summary>
-
-
     /// 重置灯效状态
-
-
     /// </summary>
-
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -476,25 +357,16 @@ public class SosEffect : ILedEffect
 public class BreathingEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -523,25 +395,16 @@ public class BreathingEffect : ILedEffect
 public class FireflyEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -564,26 +427,16 @@ public class FireflyEffect : ILedEffect
 public class EcgEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         long pos = elapsedMs % 1200;
@@ -657,26 +510,15 @@ public class EcgEffect : ILedEffect
 public class PhaseChaseEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         double t = (elapsedMs % 3000) * 2.0 * Math.PI / 3000.0;
@@ -699,26 +541,15 @@ public class PhaseChaseEffect : ILedEffect
 public class StrobeChaseEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         long pos = elapsedMs % 1680;
@@ -766,25 +597,16 @@ public class StrobeChaseEffect : ILedEffect
 public class TaichiEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
 
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
 
     public LedColor Update(long elapsedMs)
     {
@@ -832,29 +654,15 @@ public class HelloMorseEffect : ILedEffect
     }
 
     /// <summary>
-
-
     /// 重置灯效状态
-
-
     /// </summary>
-
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         long cycleMs = 0;
@@ -883,26 +691,15 @@ public class HelloMorseEffect : ILedEffect
 public class RadarEffect : ILedEffect
 {
     /// <summary>
-
     /// 重置灯效状态
-
     /// </summary>
-
     public void Reset()
     { }
 
     /// <summary>
-
-
     /// 计算当前帧颜色输出
-
-
     /// </summary>
-
-
     /// <param name="elapsedMs">从灯效启动至今的毫秒数</param>
-
-
     public LedColor Update(long elapsedMs)
     {
         long pos = elapsedMs % 4500;

@@ -99,7 +99,6 @@ public class NamedPipeListenerService : IDisposable
         }
         catch // JSON 解析失败，忽略
         {
-
         }
     }
 

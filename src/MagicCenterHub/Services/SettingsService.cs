@@ -48,7 +48,6 @@ public static class SettingsService
         }
         catch // 静默失败，不影响主流程
         {
-
         }
     }
 }
