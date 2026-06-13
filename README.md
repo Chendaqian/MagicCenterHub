@@ -15,6 +15,9 @@ A Windows desktop monitoring widget with real-time hardware metrics and Claude C
 
 ## Features
 
+<img width="1438" height="287" alt="AIHUD" src="https://github.com/user-attachments/assets/37ba691e-4504-4af6-99e0-337de2db7f7d" />
+
+
 ### Hardware Monitoring
 - **CPU** — Usage, Temperature
 - **GPU** — Usage, Temperature
