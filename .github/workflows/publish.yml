@@ -42,4 +42,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: MagicCenterHub.zip
+          body: |
+            ## MagicCenterHub v1.0 — 首次正式发布 🎉
+
+            Windows 桌面硬件监控悬浮窗 + Claude Code Hook LED 灯效指示。
+
+            ### 安装说明
+            解压 `MagicCenterHub.zip`，运行 `MagicCenterHub.exe` 即可。需 .NET 8 Desktop Runtime。
           generate_release_notes: true
