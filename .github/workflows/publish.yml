@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -34,11 +36,9 @@ jobs:
         with:
           files: |
             publish/MagicCenterHub.exe
-            publish/MagicCenterHub.dll
-            publish/Newtonsoft.Json.dll
-            publish/System.Text.Encoding.CodePages.dll
-            publish/Resources/AgentStatusLight.ico
-            publish/Resources/AgentStatusLight.png
+            publish/*.dll
+            publish/Resources/MagicCenterHub.ico
+            publish/Resources/Claude.png
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
