@@ -30,6 +30,9 @@ jobs:
       - name: Publish
         run: dotnet publish src/MagicCenterHub --configuration Release --no-restore --output ./publish
 
+      - name: Remove PDB
+        run: Remove-Item publish/*.pdb -Force
+
       - name: Package
         run: Compress-Archive -Path publish/* -DestinationPath MagicCenterHub.zip
 
