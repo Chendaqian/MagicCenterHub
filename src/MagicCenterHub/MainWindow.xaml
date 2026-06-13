@@ -6,8 +6,7 @@
         Title="MagicCenterHub" Width="1428" Height="284"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         Topmost="True" ShowInTaskbar="False"
-        Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        MouseRightButtonDown="Window_MouseRightButtonDown">
+        Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
         <utils:PercentToWidthConverter x:Key="PercentToWidthConverter" />
         <Style x:Key="UsageBar" TargetType="ProgressBar">

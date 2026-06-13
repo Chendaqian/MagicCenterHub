@@ -266,14 +266,6 @@ public partial class App : Application
         return Drawing.SystemIcons.Application;
     }
 
-    /// <summary>
-    /// 在指定屏幕位置显示右键菜单（供主窗口右键调用）
-    /// </summary>
-    public void ShowContextMenuAt(int screenX, int screenY)
-    {
-        _trayMenu?.Show(screenX, screenY);
-    }
-
     private void ToggleWindow()
     {
         if (_mainWindow == null) return;
