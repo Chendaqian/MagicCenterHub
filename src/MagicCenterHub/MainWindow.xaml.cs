@@ -95,6 +95,15 @@ public partial class MainWindow : Window
         DragMove();
     }
 
+    private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        System.Windows.Point screenPos = PointToScreen(e.GetPosition(this));
+        if (Application.Current is App app)
+        {
+            app.ShowContextMenuAt((int)screenPos.X, (int)screenPos.Y);
+        }
+    }
+
     private void Window_Closing(object? sender, CancelEventArgs e)
     {
         SaveWindowPosition();
