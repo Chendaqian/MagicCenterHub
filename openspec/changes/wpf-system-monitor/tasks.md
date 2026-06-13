@@ -66,9 +66,9 @@
 ## 7. 命名管道监听 (hook-listener)
 
 - [x] 7.1 创建 NamedPipeListenerService，监听 `\\.\pipe\ClaudeCodeMagicCenterHub`
-- [x] 7.2 实现 JSON 消息解析（event/tool/success 字段）
-- [x] 7.3 实现事件到 LED 状态映射逻辑（PreToolUse→黄闪、PermissionRequest→红闪等）
-- [x] 7.4 实现未知事件忽略和格式错误容错
+- [x] 7.2 实现 JSON 消息解析（ledMode 字段，0-19 数字编号）
+- [x] 7.3 实现灯效模式切换（收到 ledMode 后直接设置对应 LedMode）
+- [x] 7.4 实现未知编号忽略和格式错误容错
 - [x] 7.5 实现客户端断开后自动重新监听
 
 ## 8. 设置界面 (settings-window)

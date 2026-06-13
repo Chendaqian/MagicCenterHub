@@ -66,7 +66,10 @@
 
 ```json
 {
-  "cpuFrequencyGHz": 3.6,
+  "windowLeft": -1,
+  "windowTop": -1,
+  "windowTopMost": true,
+  "pollIntervalMs": 3000,
   "cpuMaxTempC": 100,
   "gpuMaxTempC": 95,
   "colorThresholds": {
@@ -78,7 +81,9 @@
 }
 ```
 
-- `cpuFrequencyGHz`: CPU 主频（GHz），用于信息展示
+- `windowLeft` / `windowTop`: 窗口坐标（-1 = 自动定位）
+- `windowTopMost`: 窗口是否置顶
+- `pollIntervalMs`: HWiNFO 采集间隔（毫秒），默认 3000
 - `cpuMaxTempC`: CPU 最高温度（°C），决定温度进度条的满量程
 - `gpuMaxTempC`: GPU 最高温度（°C），决定温度进度条的满量程
 - `colorThresholds`: 颜色切换阈值
