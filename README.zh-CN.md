@@ -54,14 +54,17 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 
 ### Hook 事件映射
 
-| Claude Code 事件 | LED 模式 |
-|------------------|----------|
-| PreToolUse | 绿灯闪烁 |
-| UserPromptSubmit | 绿灯常亮 |
-| PermissionRequest | 黄灯闪烁 |
-| Notification | 红灯闪烁 |
-| PostToolUseFailure | 红灯常亮 |
-| Stop | 太极呼吸 |
+| Claude Code 事件 | LED 模式 | 通知 |
+|------------------|----------|------|
+| PreToolUse | 2 - 绿闪 | — |
+| UserPromptSubmit | 2 - 绿闪 | — |
+| PermissionRequest | 4 - 黄闪 | ⏳ 需要权限确认 |
+| PostToolUseFailure | 3 - 红闪 | ❌ 工具执行失败 |
+| Stop | 5 - 绿亮 | ✅ 任务已完成 |
+| SessionStart | 17 - 太极 | — |
+| SessionEnd | 17 - 太极 | — |
+
+> 映射在 `hooks/claude-code-settings-example.json` 中配置，应用本身不硬编码事件映射。
 
 ## 技术栈
 
@@ -79,8 +82,9 @@ src/MagicCenterHub/
 ├── MainWindow.xaml / .cs               # 主窗口：1428x284 布局、LED 动画循环
 ├── LedTestWindow.xaml / .cs            # LED 灯效测试窗口
 ├── SettingsWindow.xaml / .cs           # 设置窗口
-├── PercentToWidthConverter.cs          # 进度条百分比→宽度转换器
-├── IconHelper.cs                       # 图标生成工具
+├── Utils/
+│   ├── PercentToWidthConverter.cs      # 进度条百分比→宽度转换器
+│   └── IconHelper.cs                   # 图标生成工具
 ├── Models/
 │   ├── Settings.cs                     # 配置模型
 │   ├── HardwareData.cs                 # 硬件数据模型
@@ -95,9 +99,14 @@ src/MagicCenterHub/
 │   ├── LedEffects.cs                   # 20 种灯效实现
 │   └── LedEffectFactory.cs             # 工厂模式创建灯效
 ├── ViewModels/
-│   └── MainViewModel.cs                # 数据绑定 + 三档颜色 + hook 事件映射
-└── Resources/
-    └── AgentStatusLight.ico            # 托盘图标
+│   └── MainViewModel.cs                # 数据绑定 + 三档颜色
+├── Resources/
+│   ├── MagicCenterHub.ico              # 托盘图标
+│   └── Claude.png                      # 通知图标
+└── hooks/
+    ├── send-hook.ps1                   # Hook 脚本：LED 控制 + BurntToast 通知
+    ├── claude-code-settings-example.json  # Claude Code hooks 配置示例
+    └── sound-test.ps1                  # 音效测试工具
 ```
 
 ## 配置
@@ -106,13 +115,17 @@ src/MagicCenterHub/
 
 | 字段 | 说明 | 默认值 |
 |------|------|--------|
+| WindowLeft | 窗口 X 坐标（-1 = 自动定位） | -1 |
+| WindowTop | 窗口 Y 坐标（-1 = 自动定位） | -1 |
 | WindowTopMost | 窗口置顶 | true |
+| PollIntervalMs | HWiNFO 采集间隔（毫秒） | 3000 |
 | CpuMaxTempC | CPU 温度上限 | 100 |
 | GpuMaxTempC | GPU 温度上限 | 95 |
 | ColorThresholds.UsageGreen | 使用率绿色阈值 | 50 |
 | ColorThresholds.UsageYellow | 使用率黄色阈值 | 80 |
 | ColorThresholds.TempGreen | 温度绿色阈值 | 60 |
 | ColorThresholds.TempYellow | 温度黄色阈值 | 80 |
+| PositionPresets | 窗口位置预设列表 | [] |
 
 ## 前置要求
 
@@ -122,8 +135,10 @@ src/MagicCenterHub/
 ## 命名管道协议
 
 - 管道名：`\\.\pipe\ClaudeCodeMagicCenterHub`
-- 消息格式：`{"event": "事件名"}`
-- 测试命令：`SetMode:N`（直接指定灯效编号）、`Reset`（重置）
+- 消息格式：`{"ledMode": N}`（N = 0-19，灯效模式编号）
+- 测试命令：`powershell -File send-hook.ps1 -LedMode 2`
+
+> 事件到灯效编号的映射在 `hooks/claude-code-settings-example.json` 中配置。
 
 ## 许可证
 

@@ -57,14 +57,17 @@ Three-color LED (Red/Yellow/Green) reflects Claude Code tool call status in real
 
 ### Hook Event Mapping
 
-| Claude Code Event | LED Mode |
-|-------------------|----------|
-| PreToolUse | Green Flash |
-| UserPromptSubmit | Green On |
-| PermissionRequest | Yellow Flash |
-| Notification | Red Flash |
-| PostToolUseFailure | Red On |
-| Stop | Taichi Breathing |
+| Claude Code Event | LED Mode | Notification |
+|-------------------|----------|-------------|
+| PreToolUse | 2 - Green Flash | — |
+| UserPromptSubmit | 2 - Green Flash | — |
+| PermissionRequest | 4 - Yellow Flash | ⏳ 需要权限确认 |
+| PostToolUseFailure | 3 - Red Flash | ❌ 工具执行失败 |
+| Stop | 5 - Green On | ✅ 任务已完成 |
+| SessionStart | 17 - Taichi | — |
+| SessionEnd | 17 - Taichi | — |
+
+> Mapping is configured in `hooks/claude-code-settings-example.json`, not hardcoded in the application.
 
 ## Tech Stack
 
@@ -82,8 +85,9 @@ src/MagicCenterHub/
 ├── MainWindow.xaml / .cs               # Main window: 1428x284 layout, LED animation loop
 ├── LedTestWindow.xaml / .cs            # LED effect test window
 ├── SettingsWindow.xaml / .cs           # Settings window
-├── PercentToWidthConverter.cs          # Progress bar percentage→width converter
-├── IconHelper.cs                       # Icon generation utility
+├── Utils/
+│   ├── PercentToWidthConverter.cs      # Progress bar percentage→width converter
+│   └── IconHelper.cs                   # Icon generation utility
 ├── Models/
 │   ├── Settings.cs                     # Configuration model
 │   ├── HardwareData.cs                 # Hardware data model
@@ -98,9 +102,14 @@ src/MagicCenterHub/
 │   ├── LedEffects.cs                   # 20 LED effect implementations
 │   └── LedEffectFactory.cs             # Factory pattern for effects
 ├── ViewModels/
-│   └── MainViewModel.cs                # Data binding + color thresholds + hook mapping
-└── Resources/
-    └── AgentStatusLight.ico            # Tray icon
+│   └── MainViewModel.cs                # Data binding + color thresholds
+├── Resources/
+│   ├── MagicCenterHub.ico              # Tray icon
+│   └── Claude.png                      # Notification icon
+└── hooks/
+    ├── send-hook.ps1                   # Hook script: LED control + BurntToast notification
+    ├── claude-code-settings-example.json  # Claude Code hooks configuration example
+    └── sound-test.ps1                  # Sound effect test tool
 ```
 
 ## Configuration
@@ -109,13 +118,17 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 
 | Field | Description | Default |
 |-------|-------------|---------|
+| WindowLeft | Window X position (-1 = auto) | -1 |
+| WindowTop | Window Y position (-1 = auto) | -1 |
 | WindowTopMost | Always on top | true |
+| PollIntervalMs | HWiNFO polling interval (ms) | 3000 |
 | CpuMaxTempC | CPU max temperature | 100 |
 | GpuMaxTempC | GPU max temperature | 95 |
 | ColorThresholds.UsageGreen | Usage green threshold (%) | 50 |
 | ColorThresholds.UsageYellow | Usage yellow threshold (%) | 80 |
 | ColorThresholds.TempGreen | Temperature green threshold (°C) | 60 |
 | ColorThresholds.TempYellow | Temperature yellow threshold (°C) | 80 |
+| PositionPresets | Window position presets list | [] |
 
 ## Prerequisites
 
@@ -125,8 +138,10 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 ## Named Pipe Protocol
 
 - Pipe name: `\\.\pipe\ClaudeCodeMagicCenterHub`
-- Message format: `{"event": "event_name"}`
-- Test commands: `SetMode:N` (set LED mode directly), `Reset` (reset)
+- Message format: `{"ledMode": N}` (N = 0-19, LED effect mode number)
+- Test command: `powershell -File send-hook.ps1 -LedMode 2`
+
+> The mapping from Claude Code events to LED mode numbers is configured in `hooks/claude-code-settings-example.json`.
 
 ## License
 
