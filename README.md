@@ -15,7 +15,7 @@ A Windows desktop monitoring widget with real-time hardware metrics and Claude C
 
 ## Features
 
-<img width="1438" height="287" alt="AIHUD" src="https://github.com/user-attachments/assets/37ba691e-4504-4af6-99e0-337de2db7f7d" />
+<img width="1418" height="279" alt="AIHUD" src="https://github.com/user-attachments/assets/9807456f-9da9-4163-afa2-574af535069d" />
 
 
 ### Hardware Monitoring
