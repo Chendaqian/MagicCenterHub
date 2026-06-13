@@ -12,6 +12,9 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 [![GitHub Release](https://img.shields.io/github/v/release/ChenDaqian/MagicCenterHub?label=Release)](https://github.com/ChenDaqian/MagicCenterHub/releases/latest)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ChenDaqian/MagicCenterHub/publish.yml?label=Build)](https://github.com/ChenDaqian/MagicCenterHub/actions/workflows/publish.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/ChenDaqian/MagicCenterHub?style=flat)](https://github.com/ChenDaqian/MagicCenterHub/stargazers)
+[![GitHub Downloads](https://img.shields.io/github/downloads/ChenDaqian/MagicCenterHub/total?style=flat)](https://github.com/ChenDaqian/MagicCenterHub/releases/latest)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/ChenDaqian/MagicCenterHub?style=flat)](https://github.com/ChenDaqian/MagicCenterHub/commits/master)
 
 ## 功能特性
 
