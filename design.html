@@ -1,0 +1,115 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{width:1424px;height:280px;background:#2a2a2e;display:flex;align-items:stretch;font-family:'Courier New',monospace;overflow:hidden;border-radius:12px}
+.panel{background:#333338;border-radius:10px;padding:14px 18px;display:flex;flex-direction:column}
+.ptitle{display:flex;align-items:center;gap:7px;font-size:27px;color:#7dd4d4;font-weight:700;letter-spacing:0.5px;margin-bottom:12px}
+.ptitle i{font-size:30px}
+.mlabel{font-size:15px;color:#d3d0d0;margin-bottom:3px}
+.mval{font-weight:700}
+.green{color:#6fcf6f}
+.pink{color:#f06080}
+.amber{color:#f0a840}
+.teal{color:#50d0c0}
+.bar-track{height:20px;background:#444;border-radius:5px;margin:6px 0 14px}
+.bar-fill{height:20px;border-radius:5px}
+.divline{height:1px;background:#444;margin:8px 0}
+.subpanel{background:#3c3c42;border-radius:8px;padding:15px 14px;margin-bottom:6px}
+.subpanel:last-child{margin-bottom:0}
+.subtitle{display:flex;align-items:center;gap:6px;font-size:20px;color:#7dd4d4;font-weight:700;margin-bottom:8px}
+.subtitle i{font-size:17px}
+.tworow{display:flex;gap:20px}
+</style>
+<div class="wrap">
+
+  <div style="width:130px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+    <svg width="70" height="240" viewBox="0 0 70 240" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="35" cy="36" r="28" fill="#c02020"/>
+      <circle cx="35" cy="36" r="22" fill="#ff4444"/>
+      <circle cx="35" cy="36" r="11" fill="#ffaaaa" opacity="0.7"/>
+      <circle cx="35" cy="120" r="28" fill="#a06000"/>
+      <circle cx="35" cy="120" r="22" fill="#f0a030"/>
+      <circle cx="35" cy="120" r="11" fill="#ffd890" opacity="0.7"/>
+      <circle cx="35" cy="204" r="28" fill="#116611"/>
+      <circle cx="35" cy="204" r="22" fill="#30c030"/>
+      <circle cx="35" cy="204" r="11" fill="#a0f0a0" opacity="0.7"/>
+    </svg>
+  </div>
+
+  <div style="flex:1;display:flex;gap:10px;padding:14px 10px 14px 0;min-width:0">
+
+    <div class="panel" style="flex:1">
+      <div class="ptitle"><i class="ti ti-cpu" aria-hidden="true"></i>CPU</div>
+      <div style="margin-bottom:6px">
+        <div class="mlabel">CPU 使用率</div>
+        <div class="mval green" style="font-size:26px">29.6%</div>
+        <div class="bar-track"><div class="bar-fill" style="width:29.6%;background:#6fcf6f"></div></div>
+      </div>
+      <div>
+        <div class="mlabel">CPU 温度</div>
+        <div class="mval green" style="font-size:26px">0.00°C</div>
+        <div class="bar-track" style="margin-bottom:0"><div class="bar-fill" style="width:0%;background:#6fcf6f"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="flex:1">
+      <div class="ptitle"><i class="ti ti-device-gamepad-2" aria-hidden="true"></i>GPU</div>
+      <div style="margin-bottom:6px">
+        <div class="mlabel">GPU 使用率</div>
+        <div class="mval green" style="font-size:26px">0.00%</div>
+        <div class="bar-track"><div class="bar-fill" style="width:0%;background:#6fcf6f"></div></div>
+      </div>
+      <div>
+        <div class="mlabel">GPU 温度</div>
+        <div class="mval amber" style="font-size:26px">60.5°C</div>
+        <div class="bar-track" style="margin-bottom:0">
+          <div class="bar-fill" style="width:75%;background: #f0a840;"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="flex:1.1">
+      <div class="ptitle"><i class="ti ti-server" aria-hidden="true"></i>主机</div>
+      <div style="margin-bottom:6px">
+        <div class="mlabel">内存占用</div>
+        <div class="mval pink" style="font-size:26px">30.5 GB</div>
+        <div class="bar-track"><div class="bar-fill" style="width:75%;background:#f06080"></div></div>
+      </div>
+      <div>
+        <div class="mlabel">电池功耗</div>
+        <div class="mval green" style="font-size:26px">0.00 W</div>
+        <div class="bar-track" style="margin-bottom:0"><div class="bar-fill" style="width:0%;background:#6fcf6f"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="flex:1.2;gap:6px">
+      <div class="subpanel">
+        <div class="subtitle"><i class="ti ti-database" aria-hidden="true"></i>磁盘</div>
+        <div class="tworow">
+          <div>
+            <div class="mlabel">读取</div>
+            <div class="mval green" style="font-size:20px">0.00 KB/s</div>
+          </div>
+          <div>
+            <div class="mlabel">写入</div>
+            <div class="mval amber" style="font-size:20px">4.07 MB/s</div>
+          </div>
+        </div>
+      </div>
+      <div class="subpanel">
+        <div class="subtitle"><i class="ti ti-wifi" aria-hidden="true"></i>网络</div>
+        <div class="tworow">
+          <div>
+            <div class="mlabel">上传</div>
+            <div class="mval green" style="font-size:20px">0.24 KB/s</div>
+          </div>
+          <div>
+            <div class="mlabel">下载</div>
+            <div class="mval teal" style="font-size:20px">87.7 KB/s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

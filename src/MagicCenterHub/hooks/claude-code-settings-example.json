@@ -1,0 +1,88 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 17 -NoNotify",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 17 -NoNotify",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 2 -NoNotify",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 2 -NoNotify",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 4 -Message '⏳ 需要权限确认' -Sound Mail",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 3 -Message '❌ 工具执行失败' -Sound Reminder",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"D:\\Source\\Repos\\MagicCenterHub\\src\\MagicCenterHub\\hooks\\send-hook.ps1\" -LedMode 5 -Message '✅ 任务已完成' -Sound IM",
+            "timeout": 2000
+          }
+        ]
+      }
+    ]
+  }
+}

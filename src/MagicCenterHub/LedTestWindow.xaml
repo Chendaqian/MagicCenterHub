@@ -1,0 +1,47 @@
+<Window x:Class="MagicCenterHub.LedTestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LED 灯效测试" Width="500" Height="460"
+        WindowStartupLocation="CenterScreen" Background="#2A2A2E">
+    <Window.Resources>
+        <Style x:Key="ModeBtn" TargetType="Button">
+            <Setter Property="Width" Value="90" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="FontFamily" Value="Courier New" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Background" Value="#3C3C42" />
+            <Setter Property="Foreground" Value="#D3D0D0" />
+            <Setter Property="BorderBrush" Value="#555" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+    </Window.Resources>
+    <StackPanel Margin="15">
+        <TextBlock Text="点击按钮测试灯效" FontFamily="Courier New" FontSize="18"
+                   Foreground="#7DD4D4" Margin="0,0,0,15" HorizontalAlignment="Center" />
+        <WrapPanel HorizontalAlignment="Center">
+            <Button Content="0 全灭" Tag="0" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="1 同闪" Tag="1" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="2 绿闪" Tag="2" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="3 红闪" Tag="3" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="4 黄闪" Tag="4" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="5 绿亮" Tag="5" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="6 红亮" Tag="6" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="7 黄亮" Tag="7" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="8 全亮" Tag="8" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="9 警车" Tag="9" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="10 心跳" Tag="10" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="11 SOS" Tag="11" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="12 呼吸" Tag="12" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="13 萤火虫" Tag="13" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="14 心电" Tag="14" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="15 跑马" Tag="15" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="16 爆闪" Tag="16" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="17 太极" Tag="17" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="18 HELLO" Tag="18" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+            <Button Content="19 雷达" Tag="19" Click="Mode_Click" Style="{StaticResource ModeBtn}" />
+        </WrapPanel>
+        <TextBlock x:Name="StatusText" Text="当前: 全灭" FontFamily="Courier New" FontSize="14"
+                   Foreground="#F0A840" Margin="0,15,0,0" HorizontalAlignment="Center" />
+    </StackPanel>
+</Window>

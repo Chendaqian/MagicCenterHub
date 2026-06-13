@@ -1,0 +1,11 @@
+﻿[*.{cs,vb}]
+
+# IDE0028: 简化集合初始化
+dotnet_diagnostic.IDE0028.severity = none
+
+# IDE0090: 使用 "new(...)"
+dotnet_diagnostic.IDE0090.severity = none
+
+
+# RCS1021: Convert lambda expression body to expression body
+dotnet_diagnostic.RCS1021.severity = none
