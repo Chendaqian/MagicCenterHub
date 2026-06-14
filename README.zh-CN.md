@@ -1,7 +1,7 @@
 # MagicCenterHub 🚦
 
 <div align="center">
-    <img width="463" height="364" alt="PixPin_2026-06-13_19-40-09" src="https://github.com/user-attachments/assets/ff76e92f-a932-449c-ae15-31b27944fd02" />
+    <img width="300" height="236"  alt="PixPin_2026-06-13_19-40-09" src="https://github.com/user-attachments/assets/ff76e92f-a932-449c-ae15-31b27944fd02" />
 </div>
 
 Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hook LED 灯效指示。
