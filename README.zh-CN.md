@@ -1,4 +1,4 @@
-# MagicCenterHub
+# MagicCenterHub 🚦
 
 Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hook LED 灯效指示。
 
