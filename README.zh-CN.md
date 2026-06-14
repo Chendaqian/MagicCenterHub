@@ -142,6 +142,11 @@ src/MagicCenterHub/
 
 > 事件到灯效编号的映射在 `hooks/claude-code-settings-example.json` 中配置。
 
+## contributors
+<a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
+</a>
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=Chendaqian%2FMagicCenterHub&type=date&legend=top-left">
@@ -150,10 +155,6 @@ src/MagicCenterHub/
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
  </picture>
-</a>
-
-<a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
 </a>
 
 
