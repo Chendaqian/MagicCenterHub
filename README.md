@@ -1,4 +1,4 @@
-# MagicCenterHub
+# MagicCenterHub 🚦
 
 A Windows desktop monitoring widget with real-time hardware metrics and Claude Code hook LED indicator.
 
