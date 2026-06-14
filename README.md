@@ -145,7 +145,7 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 
 > The mapping from Claude Code events to LED mode numbers is configured in `hooks/claude-code-settings-example.json`.
 
-## contributors
+## Contributors
 
 <a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
