@@ -143,6 +143,16 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 
 > The mapping from Claude Code events to LED mode numbers is configured in `hooks/claude-code-settings-example.json`.
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=Chendaqian%2FMagicCenterHub&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
+ </picture>
+</a>
+
 ## License
 
 MIT License
