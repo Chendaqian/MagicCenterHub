@@ -155,36 +155,8 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
  </picture>
 </a>
 
-
-## 📜 License
-
-<div align="center">
-
-<br>
-
-<img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL v3">
-
-<br><br>
-
-**QuickLook is free and open source under [GPL-3.0](https://opensource.org/licenses/GPL-3.0)**
-
-*Free software, free forever. No ads, no tracking, no premium tiers.*
-
-<br>
-
-**Need commercial licensing?** Contact us for sublicensing options.
-
-</div>
-
-<br>
-
 ---
 # contributors
 <a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
 </a>
-
-Made with [contrib.rocks](https://contrib.rocks).
-## License
-
-MIT License
