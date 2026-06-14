@@ -156,9 +156,3 @@ src/MagicCenterHub/
    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
  </picture>
 </a>
-
-
-## contributors
-<a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
-</a>
