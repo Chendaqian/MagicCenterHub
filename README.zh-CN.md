@@ -152,6 +152,12 @@ src/MagicCenterHub/
  </picture>
 </a>
 
+<a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
 ## 许可证
 
 MIT License
