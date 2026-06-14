@@ -156,7 +156,7 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 </a>
 
 ---
-# contributors
+## contributors
 <a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
 </a>
