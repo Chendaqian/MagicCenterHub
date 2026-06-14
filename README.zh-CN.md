@@ -142,7 +142,7 @@ src/MagicCenterHub/
 
 > 事件到灯效编号的映射在 `hooks/claude-code-settings-example.json` 中配置。
 
-## contributors
+## Contributors
 <a href="https://github.com/Chendaqian/MagicCenterHub/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Chendaqian/MagicCenterHub" />
 </a>
