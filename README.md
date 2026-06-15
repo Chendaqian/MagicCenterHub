@@ -63,9 +63,9 @@ Three-color LED (Red/Yellow/Green) reflects Claude Code tool call status in real
 |-------------------|----------|-------------|
 | PreToolUse | 2 - Green Flash | — |
 | UserPromptSubmit | 2 - Green Flash | — |
-| PermissionRequest | 4 - Yellow Flash | ⏳ 需要权限确认 |
-| PostToolUseFailure | 3 - Red Flash | ❌ 工具执行失败 |
-| Stop | 5 - Green On | ✅ 任务已完成 |
+| PermissionRequest | 4 - Yellow Flash | ⏳ Permission confirmation required |
+| PostToolUseFailure | 3 - Red Flash | ❌ Tool execution failed |
+| Stop | 5 - Green On | ✅ Task completed |
 | SessionStart | 17 - Taichi | — |
 | SessionEnd | 17 - Taichi | — |
 
