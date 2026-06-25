@@ -6,7 +6,8 @@
         Title="MagicCenterHub" Width="1428" Height="284"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         Topmost="True" ShowInTaskbar="False"
-        Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseRightButtonDown="Window_MouseRightButtonDown">
     <Window.Resources>
         <utils:PercentToWidthConverter x:Key="PercentToWidthConverter" />
         <Style x:Key="UsageBar" TargetType="ProgressBar">
@@ -65,15 +66,15 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <!-- 红灯 -->
+                    <!-- 绿灯 -->
                     <Grid Width="60" Height="60" Margin="0,0,0,20">
-                        <Ellipse Fill="#C02020" />
+                        <Ellipse Fill="#116611" />
                         <Ellipse Width="48" Height="48">
                             <Ellipse.Fill>
-                                <SolidColorBrush Color="{Binding LedRed}" />
+                                <SolidColorBrush Color="{Binding LedGreen}" />
                             </Ellipse.Fill>
                         </Ellipse>
-                        <Ellipse Width="24" Height="24" Fill="#FFAAAA" Opacity="0.7" />
+                        <Ellipse Width="24" Height="24" Fill="#A0F0A0" Opacity="0.7" />
                     </Grid>
                     <!-- 黄灯 -->
                     <Grid Width="60" Height="60" Margin="0,0,0,20">
@@ -85,15 +86,15 @@
                         </Ellipse>
                         <Ellipse Width="24" Height="24" Fill="#FFD890" Opacity="0.7" />
                     </Grid>
-                    <!-- 绿灯 -->
+                    <!-- 红灯 -->
                     <Grid Width="60" Height="60">
-                        <Ellipse Fill="#116611" />
+                        <Ellipse Fill="#C02020" />
                         <Ellipse Width="48" Height="48">
                             <Ellipse.Fill>
-                                <SolidColorBrush Color="{Binding LedGreen}" />
+                                <SolidColorBrush Color="{Binding LedRed}" />
                             </Ellipse.Fill>
                         </Ellipse>
-                        <Ellipse Width="24" Height="24" Fill="#A0F0A0" Opacity="0.7" />
+                        <Ellipse Width="24" Height="24" Fill="#FFAAAA" Opacity="0.7" />
                     </Grid>
                 </StackPanel>
                 <!-- HWiNFO 状态 - 底部 -->

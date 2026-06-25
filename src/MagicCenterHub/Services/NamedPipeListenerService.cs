@@ -72,6 +72,9 @@ public class NamedPipeListenerService : IDisposable
 
                 if (!string.IsNullOrWhiteSpace(line))
                     ParseMessage(line);
+
+                // 断开连接，准备接受下一个请求
+                server.Disconnect();
             }
             catch (OperationCanceledException)
             {

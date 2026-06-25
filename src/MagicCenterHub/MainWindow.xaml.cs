@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Drawing = System.Drawing;
+using WinForms = System.Windows.Forms;
 
 namespace MagicCenterHub;
 
@@ -18,6 +20,11 @@ public partial class MainWindow : Window
     private readonly NamedPipeListenerService _pipeListener;
     private readonly Settings _settings;
     private bool _isLedRunning;
+    private bool _isFullScreen;
+    private double _normalLeft;
+    private double _normalTop;
+    private double _normalWidth;
+    private double _normalHeight;
 
     /// <summary>
     /// 数据绑定 ViewModel
@@ -95,6 +102,17 @@ public partial class MainWindow : Window
         DragMove();
     }
 
+    private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        // 获取鼠标位置并显示托盘菜单
+        Drawing.Point mousePos = WinForms.Cursor.Position;
+        if (Application.Current is App app)
+        {
+            app.ShowTrayMenu(mousePos.X, mousePos.Y);
+        }
+        e.Handled = true;
+    }
+
     private void Window_Closing(object? sender, CancelEventArgs e)
     {
         SaveWindowPosition();
@@ -109,6 +127,7 @@ public partial class MainWindow : Window
     {
         SaveWindowPosition();
         StopLedAnimation();
+        _viewModel.Dispose();
         _hwMonitor.Dispose();
         _pipeListener.Dispose();
         Application.Current.Shutdown();
@@ -160,6 +179,48 @@ public partial class MainWindow : Window
         _settings.WindowLeft = Left;
         _settings.WindowTop = Top;
         SettingsService.Save(_settings);
+    }
+
+    /// <summary>
+    /// 切换全屏显示（在当前屏幕最大化）
+    /// </summary>
+    public void ToggleFullScreen()
+    {
+        if (_isFullScreen)
+        {
+            // 退出全屏：恢复之前的位置和大小
+            Left = _normalLeft;
+            Top = _normalTop;
+            Width = _normalWidth;
+            Height = _normalHeight;
+            _isFullScreen = false;
+        }
+        else
+        {
+            // 进入全屏：保存当前状态
+            _normalLeft = Left;
+            _normalTop = Top;
+            _normalWidth = Width;
+            _normalHeight = Height;
+
+            // 获取当前窗口中心点所在的屏幕
+            Drawing.Point center = new Drawing.Point(
+                (int)(Left + Width / 2),
+                (int)(Top + Height / 2));
+            WinForms.Screen screen = WinForms.Screen.FromPoint(center);
+            Drawing.Rectangle workArea = screen.WorkingArea;
+
+            // 考虑 DPI 缩放
+            double scale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+
+            // 最大化到屏幕工作区域（排除任务栏）
+            Left = workArea.Left / scale;
+            Top = workArea.Top / scale;
+            Width = workArea.Width / scale;
+            Height = workArea.Height / scale;
+
+            _isFullScreen = true;
+        }
     }
 
     /// <summary>

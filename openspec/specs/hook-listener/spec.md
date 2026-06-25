@@ -32,15 +32,11 @@
 - **THEN** LED 灯效切换为模式 17（太极呼吸）
 
 ### Requirement: Hook 脚本集成
-系统 SHALL 提供 PowerShell hook 脚本 `send-hook.ps1`，支持通过 `-LedMode` 参数发送灯效命令，可选 `-Message` 参数触发 BurntToast 通知。
+系统 SHALL 提供 PowerShell hook 脚本 `send-hook.ps1`，支持通过 `-LedMode` 参数发送灯效命令。
 
 #### Scenario: hook 脚本发送灯效
 - **WHEN** Claude Code 触发 PreToolUse 事件，hook 配置执行 `send-hook.ps1 -LedMode 2`
 - **THEN** 脚本通过命名管道发送 `{"ledMode": 2}`，应用切换为绿闪
-
-#### Scenario: hook 脚本带通知
-- **WHEN** Claude Code 触发 Stop 事件，hook 配置执行 `send-hook.ps1 -LedMode 5 -Message '✅ 任务已完成'`
-- **THEN** 脚本发送灯效命令并弹出 BurntToast 通知
 
 ### Requirement: Claude Code Hook 配置示例
 系统 SHALL 提供 `hooks/claude-code-settings-example.json`，展示 Claude Code hooks 的完整配置：
@@ -54,10 +50,39 @@
 | Stop | 5 - 绿亮 | 任务完成 |
 | SessionStart | 17 - 太极 | 会话开始 |
 | SessionEnd | 17 - 太极 | 会话结束 |
+| Notification | — | BurntToast 通知（通过 stdin 接收通知内容） |
 
 #### Scenario: 配置示例
 - **WHEN** 用户查看项目文档
 - **THEN** 提供完整的 Claude Code hooks 配置示例和 PowerShell 调用脚本
+
+#### Scenario: 通知事件处理
+- **WHEN** Claude Code 触发 Notification 事件（如任务完成、需要权限确认等）
+- **THEN** hook 脚本通过 stdin 接收 JSON 格式的通知内容，使用 BurntToast 弹出 Windows 通知
+
+### Requirement: 默认灯效与空闲恢复
+系统 SHALL 支持配置默认 LED 灯效模式和空闲自动恢复功能。
+
+配置项：
+- `DefaultLedMode`：默认灯效模式编号 0-19（默认 17 - 太极）
+- `LedIdleRestoreSeconds`：空闲恢复时间（秒），0 表示不自动恢复（默认 0）
+
+#### Scenario: 启动时应用默认灯效
+- **WHEN** 应用启动
+- **THEN** LED 灯效自动设置为 `DefaultLedMode` 配置的模式
+
+#### Scenario: 空闲自动恢复
+- **WHEN** `LedIdleRestoreSeconds` 配置为 30，LED 灯效切换为模式 2（绿闪）
+- **AND** 30 秒内未收到新的灯效切换命令
+- **THEN** LED 灯效自动恢复为 `DefaultLedMode` 配置的模式
+
+#### Scenario: 空闲恢复被中断
+- **WHEN** 空闲恢复定时器运行期间收到新的灯效切换命令
+- **THEN** 定时器重置，重新开始计时
+
+#### Scenario: 空闲恢复禁用
+- **WHEN** `LedIdleRestoreSeconds` 配置为 0
+- **THEN** LED 灯效保持在最后一个设置的模式，不自动恢复
 
 ### Requirement: 管道通信容错
 系统 SHALL 处理管道通信中的异常情况，包括客户端断开、消息格式错误、管道被占用等。

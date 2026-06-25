@@ -63,13 +63,15 @@ Three-color LED (Red/Yellow/Green) reflects Claude Code tool call status in real
 |-------------------|----------|-------------|
 | PreToolUse | 2 - Green Flash | — |
 | UserPromptSubmit | 2 - Green Flash | — |
-| PermissionRequest | 4 - Yellow Flash | ⏳ Permission confirmation required |
-| PostToolUseFailure | 3 - Red Flash | ❌ Tool execution failed |
-| Stop | 5 - Green On | ✅ Task completed |
+| PermissionRequest | 4 - Yellow Flash | — |
+| PostToolUseFailure | 3 - Red Flash | — |
+| Stop | 5 - Green On | — |
 | SessionStart | 17 - Taichi | — |
 | SessionEnd | 17 - Taichi | — |
+| Notification | — | BurntToast Windows notification |
 
-> Mapping is configured in `hooks/claude-code-settings-example.json`, not hardcoded in the application.
+> LED mapping is configured in `hooks/claude-code-settings-example.json`, not hardcoded in the application.
+> Notification events use BurntToast to display Windows toast notifications via the `Notification` hook.
 
 ## Tech Stack
 
@@ -109,7 +111,7 @@ src/MagicCenterHub/
 │   ├── MagicCenterHub.ico              # Tray icon
 │   └── Claude.png                      # Notification icon
 └── hooks/
-    ├── send-hook.ps1                   # Hook script: LED control + BurntToast notification
+    ├── send-hook.ps1                   # Hook script: LED control via named pipe
     ├── claude-code-settings-example.json  # Claude Code hooks configuration example
     └── sound-test.ps1                  # Sound effect test tool
 ```
@@ -131,11 +133,52 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 | ColorThresholds.TempGreen | Temperature green threshold (°C) | 60 |
 | ColorThresholds.TempYellow | Temperature yellow threshold (°C) | 80 |
 | PositionPresets | Window position presets list | [] |
+| DefaultLedMode | Default LED effect mode (0-19, applied on startup and idle restore) | 17 |
+| LedIdleRestoreSeconds | LED idle restore time in seconds (0 = disabled) | 0 |
 
 ## Prerequisites
 
 1. **HWiNFO64** — Running with Shared Memory Support enabled
 2. **Administrator privileges** — Required to access global shared memory
+3. **Lenovo MagicBay HUD** — Small secondary display, see [Lenovo MagicBay HUD](https://support.lenovo.com/us/zc/accessories/acc500406)
+
+## HUD Auto-Start
+
+When the Lenovo MagicBay HUD is connected, MagicCenterHub launches automatically; when disconnected, it shuts down automatically.
+
+Script: [`Scripts/Monitor-HUD.ps1`](Scripts/Monitor-HUD.ps1)
+
+### How It Works
+
+1. Windows logs Event ID 1010 (device removed) in `Microsoft-Windows-Kernel-PnP/Device Management` when the HUD is unplugged
+2. A Task Scheduler task triggers on this event and runs the script
+3. The script kills the MagicCenterHub process immediately on disconnect
+4. It then polls every 2 seconds (up to 120s) waiting for the device to reappear
+5. Once reconnected, it waits 10 seconds for device initialization, then launches MagicCenterHub
+6. A login trigger also checks on user login in case the HUD is already connected
+
+### Create Scheduled Task (Manual)
+
+Run in an **elevated PowerShell**:
+
+```powershell
+$AppPath = "D:\Source\Repos\MagicCenterHub\src\MagicCenterHub\bin\Debug\net8.0-windows\MagicCenterHub.exe"
+$ScriptPath = "D:\Source\Repos\MagicCenterHub\Scripts\Monitor-HUD.ps1"
+
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
+
+# Event trigger: fires on device removal (Event ID 1010)
+$CIMTriggerClass = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler
+$eventTrigger = New-CimInstance -CimClass $CIMTriggerClass -ClientOnly
+$eventTrigger.Subscription = '<QueryList><Query Id="0" Path="Microsoft-Windows-Kernel-PnP/Device Management"><Select Path="Microsoft-Windows-Kernel-PnP/Device Management">*[System[(EventID=1010)]] and *[EventData[Data[@Name="DeviceInstanceId"] and (Data="USB\VID_17EF&amp;PID_1117\20616172")]]</Select></Query></QueryList>'
+$eventTrigger.Delay = "PT5S"
+$eventTrigger.Enabled = $true
+
+$loginTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromSeconds(30))
+
+Register-ScheduledTask -TaskName "Monitor-HUD" -Action $action -Trigger @($eventTrigger, $loginTrigger) -Settings $settings -Force
+```
 
 ## Named Pipe Protocol
 

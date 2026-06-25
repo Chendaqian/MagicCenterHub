@@ -3,13 +3,14 @@ using MagicCenterHub.Models;
 using MagicCenterHub.Services;
 using System.ComponentModel;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MagicCenterHub.ViewModels;
 
 /// <summary>
 /// 主窗口 ViewModel，负责硬件数据绑定、LED 灯效控制、hook 消息处理
 /// </summary>
-public class MainViewModel : INotifyPropertyChanged
+public class MainViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly Settings _settings;
     private HardwareData _hwData = new();
@@ -17,6 +18,7 @@ public class MainViewModel : INotifyPropertyChanged
     private ILedEffect _ledEffect;
     private DateTime _ledStartTime = DateTime.Now;
     private bool _hwInfoConnected;
+    private DispatcherTimer? _ledIdleTimer;
 
     // LED 颜色
     private Color _ledGreen = Colors.Black;
@@ -85,7 +87,24 @@ public class MainViewModel : INotifyPropertyChanged
     public MainViewModel(Settings settings)
     {
         _settings = settings;
+
+        // 应用默认灯效
+        LedMode defaultMode = (LedMode)settings.DefaultLedMode;
+        if (settings.DefaultLedMode >= 0 && settings.DefaultLedMode <= 19)
+        {
+            _currentLedMode = defaultMode;
+        }
         _ledEffect = LedEffectFactory.Create(_currentLedMode);
+
+        // 初始化空闲恢复定时器
+        if (settings.LedIdleRestoreSeconds > 0)
+        {
+            _ledIdleTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(settings.LedIdleRestoreSeconds)
+            };
+            _ledIdleTimer.Tick += OnLedIdleTimeout;
+        }
     }
 
     /// <summary>
@@ -237,6 +256,36 @@ public class MainViewModel : INotifyPropertyChanged
         _currentLedMode = mode;
         _ledEffect = LedEffectFactory.Create(mode);
         _ledStartTime = DateTime.Now;
+
+        // 重置空闲定时器
+        ResetLedIdleTimer();
+    }
+
+    /// <summary>
+    /// 重置 LED 空闲恢复定时器
+    /// </summary>
+    private void ResetLedIdleTimer()
+    {
+        if (_ledIdleTimer == null) return;
+
+        _ledIdleTimer.Stop();
+        _ledIdleTimer.Start();
+    }
+
+    /// <summary>
+    /// LED 空闲超时，恢复为默认灯效
+    /// </summary>
+    private void OnLedIdleTimeout(object? sender, EventArgs e)
+    {
+        _ledIdleTimer?.Stop();
+
+        LedMode defaultMode = (LedMode)_settings.DefaultLedMode;
+        if (_settings.DefaultLedMode >= 0 && _settings.DefaultLedMode <= 19)
+        {
+            _currentLedMode = defaultMode;
+            _ledEffect = LedEffectFactory.Create(defaultMode);
+            _ledStartTime = DateTime.Now;
+        }
     }
 
     /// <summary>
@@ -596,5 +645,14 @@ public class MainViewModel : INotifyPropertyChanged
     {
         get => _hwInfoStatusColor;
         set { _hwInfoStatusColor = value; OnPropertyChanged(nameof(HwInfoStatusColor)); }
+    }
+
+    /// <summary>
+    /// 释放资源
+    /// </summary>
+    public void Dispose()
+    {
+        _ledIdleTimer?.Stop();
+        _ledIdleTimer = null;
     }
 }

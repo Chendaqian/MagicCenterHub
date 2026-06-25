@@ -25,6 +25,8 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 | PollIntervalMs | int | 3000 | HWiNFO 采集间隔（毫秒） |
 | ColorThresholds | object | 见下 | 三档颜色阈值 |
 | PositionPresets | list | [] | 窗口位置预设 |
+| DefaultLedMode | int | 17 | 默认 LED 灯效模式（启动时应用，空闲时恢复） |
+| LedIdleRestoreSeconds | int | 0 | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 |
 
 ### ColorThresholds
 | 字段 | 默认值 | 说明 |
@@ -86,7 +88,7 @@ HWiNFO64 共享内存 → HwInfoProvider.Read() → HardwareData
 - 管道名：`\\.\pipe\ClaudeCodeMagicCenterHub`
 - 消息格式：`{"ledMode": 17}`
 - `ledMode`：灯效编号 0-19（必填）
-- 通知由 hook 脚本通过 BurntToast 直接弹出，不经过管道
+- 通知由 Claude Code 的 `Notification` hook 通过 BurntToast 直接弹出，不经过管道
 
 ## 关键设计决策
 

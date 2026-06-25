@@ -60,13 +60,15 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 |------------------|----------|------|
 | PreToolUse | 2 - 绿闪 | — |
 | UserPromptSubmit | 2 - 绿闪 | — |
-| PermissionRequest | 4 - 黄闪 | ⏳ 需要权限确认 |
-| PostToolUseFailure | 3 - 红闪 | ❌ 工具执行失败 |
-| Stop | 5 - 绿亮 | ✅ 任务已完成 |
+| PermissionRequest | 4 - 黄闪 | — |
+| PostToolUseFailure | 3 - 红闪 | — |
+| Stop | 5 - 绿亮 | — |
 | SessionStart | 17 - 太极 | — |
 | SessionEnd | 17 - 太极 | — |
+| Notification | — | BurntToast Windows 通知 |
 
-> 映射在 `hooks/claude-code-settings-example.json` 中配置，应用本身不硬编码事件映射。
+> LED 映射在 `hooks/claude-code-settings-example.json` 中配置，应用本身不硬编码事件映射。
+> 通知事件通过 `Notification` hook 使用 BurntToast 弹出 Windows 通知。
 
 ## 技术栈
 
@@ -106,7 +108,7 @@ src/MagicCenterHub/
 │   ├── MagicCenterHub.ico              # 托盘图标
 │   └── Claude.png                      # 通知图标
 └── hooks/
-    ├── send-hook.ps1                   # Hook 脚本：LED 控制 + BurntToast 通知
+    ├── send-hook.ps1                   # Hook 脚本：通过命名管道控制 LED
     ├── claude-code-settings-example.json  # Claude Code hooks 配置示例
     └── sound-test.ps1                  # 音效测试工具
 ```
@@ -128,11 +130,52 @@ src/MagicCenterHub/
 | ColorThresholds.TempGreen | 温度绿色阈值 | 60 |
 | ColorThresholds.TempYellow | 温度黄色阈值 | 80 |
 | PositionPresets | 窗口位置预设列表 | [] |
+| DefaultLedMode | 默认 LED 灯效模式（0-19，启动时应用，空闲时恢复） | 17 |
+| LedIdleRestoreSeconds | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 | 0 |
 
 ## 前置要求
 
 1. **HWiNFO64** — 运行并启用 Shared Memory Support
 2. **管理员权限** — 访问全局共享内存需要管理员权限
+3. **Lenovo MagicBay HUD** — 副屏小显示器，参见 [Lenovo MagicBay HUD](https://support.lenovo.com/us/zc/accessories/acc500406)
+
+## HUD 自动启动
+
+当 Lenovo MagicBay HUD 连接时自动启动 MagicCenterHub，断开时自动关闭。
+
+脚本路径：[`Scripts/Monitor-HUD.ps1`](Scripts/Monitor-HUD.ps1)
+
+### 工作原理
+
+1. HUD 拔掉时，Windows 在 `Microsoft-Windows-Kernel-PnP/Device Management` 日志中记录事件 ID 1010（设备移除）
+2. 任务计划程序监听该事件，触发脚本执行
+3. 脚本立即杀掉 MagicCenterHub 进程
+4. 然后每 2 秒轮询一次（最长 120 秒），等待设备重新出现
+5. 检测到设备重新连接后，等待 10 秒完成设备初始化，再启动 MagicCenterHub
+6. 登录触发器会在用户登录时额外检查一次，处理开机时设备已连接的情况
+
+### 创建计划任务（手动）
+
+以**管理员身份**运行 PowerShell：
+
+```powershell
+$AppPath = "D:\Source\Repos\MagicCenterHub\src\MagicCenterHub\bin\Debug\net8.0-windows\MagicCenterHub.exe"
+$ScriptPath = "D:\Source\Repos\MagicCenterHub\Scripts\Monitor-HUD.ps1"
+
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
+
+# 事件触发器：设备移除时触发（事件 ID 1010）
+$CIMTriggerClass = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler
+$eventTrigger = New-CimInstance -CimClass $CIMTriggerClass -ClientOnly
+$eventTrigger.Subscription = '<QueryList><Query Id="0" Path="Microsoft-Windows-Kernel-PnP/Device Management"><Select Path="Microsoft-Windows-Kernel-PnP/Device Management">*[System[(EventID=1010)]] and *[EventData[Data[@Name="DeviceInstanceId"] and (Data="USB\VID_17EF&amp;PID_1117\20616172")]]</Select></Query></QueryList>'
+$eventTrigger.Delay = "PT5S"
+$eventTrigger.Enabled = $true
+
+$loginTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromSeconds(30))
+
+Register-ScheduledTask -TaskName "Monitor-HUD" -Action $action -Trigger @($eventTrigger, $loginTrigger) -Settings $settings -Force
+```
 
 ## 命名管道协议
 

@@ -74,6 +74,11 @@ public partial class SettingsWindow : Window
         TxtUsageYellow.Text = _settings.ColorThresholds.UsageYellow.ToString("F0");
         TxtTempGreen.Text = _settings.ColorThresholds.TempGreen.ToString("F0");
         TxtTempYellow.Text = _settings.ColorThresholds.TempYellow.ToString("F0");
+
+        // LED 灯效
+        int defaultLedMode = Math.Clamp(_settings.DefaultLedMode, 0, 19);
+        CmbDefaultLedMode.SelectedIndex = defaultLedMode;
+        TxtLedIdleRestore.Text = _settings.LedIdleRestoreSeconds.ToString();
     }
 
     private void LoadPresets()
@@ -280,6 +285,16 @@ public partial class SettingsWindow : Window
         if (double.TryParse(TxtTempYellow.Text, out double ty))
             _settings.ColorThresholds.TempYellow = ty;
 
+        // LED 灯效
+        if (CmbDefaultLedMode.SelectedItem is ComboBoxItem selectedMode && selectedMode.Tag is string tagStr && int.TryParse(tagStr, out int ledMode))
+        {
+            _settings.DefaultLedMode = ledMode;
+        }
+        if (int.TryParse(TxtLedIdleRestore.Text, out int idleSeconds) && idleSeconds >= 0)
+        {
+            _settings.LedIdleRestoreSeconds = idleSeconds;
+        }
+
         SettingsService.Save(_settings);
         _onSaved?.Invoke(_settings);
 
@@ -296,5 +311,17 @@ public partial class SettingsWindow : Window
     {
         StatusText.Text = message;
         StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xF0, 0x60, 0x80));
+    }
+
+    /// <summary>
+    /// LED 模式下拉框选择变化时，确保选中项文字为白色
+    /// </summary>
+    private void CmbDefaultLedMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+        {
+            // 强制设置选中项的 Foreground 为白色
+            selectedItem.Foreground = Brushes.White;
+        }
     }
 }

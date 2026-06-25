@@ -44,6 +44,16 @@ public class Settings
     /// 窗口位置预设列表
     /// </summary>
     public List<WindowPositionPreset> PositionPresets { get; set; } = new();
+
+    /// <summary>
+    /// 默认 LED 灯效模式（启动时应用，空闲时恢复），对应 LedMode 枚举值 0-19
+    /// </summary>
+    public int DefaultLedMode { get; set; } = 17;
+
+    /// <summary>
+    /// LED 灯效空闲恢复时间（秒）。灯效改变后经过此时间自动恢复为 DefaultLedMode。0 表示不自动恢复
+    /// </summary>
+    public int LedIdleRestoreSeconds { get; set; } = 0;
 }
 
 /// <summary>

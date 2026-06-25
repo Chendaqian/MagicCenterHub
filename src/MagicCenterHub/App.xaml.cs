@@ -114,7 +114,7 @@ public partial class App : Application
         menu.Items.Add(new WinForms.ToolStripSeparator());
 
         // 菜单项
-        menu.Items.Add(CreateMenuItem("显示主窗口", "☀", (s, e) => ToggleWindow()));
+        menu.Items.Add(CreateMenuItem("显隐主窗口", "☀", (s, e) => ToggleWindow()));
         menu.Items.Add(CreateMenuItem("LED 灯效测试", "💡", (s, e) => OpenLedTest()));
 
         // 窗口位置子菜单
@@ -125,7 +125,7 @@ public partial class App : Application
             Padding = new WinForms.Padding(4, 2, 4, 2)
         };
 
-        WinForms.ToolStripMenuItem resetItem = new WinForms.ToolStripMenuItem("  🖥  default")
+        WinForms.ToolStripMenuItem resetItem = new WinForms.ToolStripMenuItem("  🖥  Default")
         {
             ForeColor = Drawing.Color.FromArgb(220, 220, 220),
             Font = new Drawing.Font("Segoe UI", 10),
@@ -133,6 +133,16 @@ public partial class App : Application
         };
         resetItem.Click += (s, e) => _mainWindow?.MoveToPrimaryScreenCenter();
         posMenu.DropDownItems.Add(resetItem);
+
+        // 全屏切换
+        WinForms.ToolStripMenuItem fullScreenItem = new WinForms.ToolStripMenuItem("  ⛶  全屏")
+        {
+            ForeColor = Drawing.Color.FromArgb(220, 220, 220),
+            Font = new Drawing.Font("Segoe UI", 10),
+            Padding = new WinForms.Padding(4, 2, 4, 2)
+        };
+        fullScreenItem.Click += (s, e) => _mainWindow?.ToggleFullScreen();
+        posMenu.DropDownItems.Add(fullScreenItem);
 
         if (_mainWindow?.Settings.PositionPresets.Count > 0)
         {
@@ -157,7 +167,8 @@ public partial class App : Application
         menu.Items.Add(CreateMenuItem("设置", "⚙", (s, e) => OpenSettings()));
 
         menu.Items.Add(new WinForms.ToolStripSeparator());
-        menu.Items.Add(CreateMenuItem("退出程序", "✕", (s, e) => _mainWindow?.ExitApp(), isExit: true));
+        menu.Items.Add(CreateMenuItem("重启程序", "🔄", (s, e) => RestartApp()));
+        menu.Items.Add(CreateMenuItem("退出程序", "❌", (s, e) => _mainWindow?.ExitApp(), isExit: false));
 
         WinForms.ContextMenuStrip? oldMenu = _trayMenu;
         _trayMenu = menu;
@@ -175,19 +186,6 @@ public partial class App : Application
         };
         item.Click += onClick;
         item.Padding = new WinForms.Padding(4, 2, 4, 2);
-        return item;
-    }
-
-    private static WinForms.ToolStripMenuItem CreateMenuItem(string text, Drawing.Bitmap? icon, EventHandler onClick, bool isExit = false)
-    {
-        WinForms.ToolStripMenuItem item = new WinForms.ToolStripMenuItem($"  {text}")
-        {
-            ForeColor = isExit ? Drawing.Color.FromArgb(0xF0, 0x60, 0x80) : Drawing.Color.FromArgb(220, 220, 220),
-            Font = new Drawing.Font("Segoe UI", 10)
-        };
-        item.Click += onClick;
-        item.Padding = new WinForms.Padding(4, 2, 4, 2);
-        if (icon != null) item.Image = icon;
         return item;
     }
 
@@ -289,6 +287,32 @@ public partial class App : Application
             onSaved: newSettings => _mainWindow.ApplySettings(newSettings),
             onPresetsChanged: () => RefreshTrayMenu());
         settingsWindow.Show();
+    }
+
+    /// <summary>
+    /// 重启应用程序
+    /// </summary>
+    private void RestartApp()
+    {
+        try
+        {
+            string exePath = Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
+            if (!string.IsNullOrEmpty(exePath))
+            {
+                Process.Start(exePath);
+            }
+        }
+        catch { }
+
+        _mainWindow?.ExitApp();
+    }
+
+    /// <summary>
+    /// 在指定位置显示托盘菜单（供主窗口右键调用）
+    /// </summary>
+    public void ShowTrayMenu(int x, int y)
+    {
+        _trayMenu?.Show(x, y);
     }
 
     private static void RegisterStartup()
