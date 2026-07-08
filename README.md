@@ -180,6 +180,25 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 Register-ScheduledTask -TaskName "Monitor-HUD" -Action $action -Trigger @($eventTrigger, $loginTrigger) -Settings $settings -Force
 ```
 
+## Build
+
+Publish to `publish/` from the repository root. Both variants exclude `.pdb` debug symbol files.
+
+```powershell
+# Framework-dependent (small, requires .NET 8 Desktop Runtime on target machine)
+dotnet publish src/MagicCenterHub/MagicCenterHub.csproj -c Release `
+  -o publish/framework-dependent `
+  -p:DebugType=none -p:DebugSymbols=false
+
+# Self-contained (large, runs without .NET installed)
+dotnet publish src/MagicCenterHub/MagicCenterHub.csproj -c Release `
+  -o publish/self-contained `
+  -r win-x64 --self-contained true `
+  -p:DebugType=none -p:DebugSymbols=false
+```
+
+Run MagicCenterHub from `publish/framework-dependent/MagicCenterHub.exe` or `publish/self-contained/MagicCenterHub.exe`.
+
 ## Named Pipe Protocol
 
 - Pipe name: `\\.\pipe\ClaudeCodeMagicCenterHub`

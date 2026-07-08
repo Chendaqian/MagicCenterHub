@@ -52,3 +52,6 @@ if (-not $NoNotify -and $Message -ne "") {
         "$timestamp - Toast Error: $_" | Out-File -FilePath $logFile -Append -Encoding UTF8
     }
 }
+
+# 始终返回成功，硬件不可用时 hook 不会报错
+exit 0

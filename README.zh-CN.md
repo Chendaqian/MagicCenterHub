@@ -177,6 +177,25 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 Register-ScheduledTask -TaskName "Monitor-HUD" -Action $action -Trigger @($eventTrigger, $loginTrigger) -Settings $settings -Force
 ```
 
+## 打包发布
+
+在仓库根目录执行，输出到 `publish/` 目录。两种方式均排除 `.pdb` 调试符号文件。
+
+```powershell
+# 框架依赖（体积小，目标机器需安装 .NET 8 Desktop Runtime）
+dotnet publish src/MagicCenterHub/MagicCenterHub.csproj -c Release `
+  -o publish/framework-dependent `
+  -p:DebugType=none -p:DebugSymbols=false
+
+# 独立部署（体积大，无需安装 .NET 即可运行）
+dotnet publish src/MagicCenterHub/MagicCenterHub.csproj -c Release `
+  -o publish/self-contained `
+  -r win-x64 --self-contained true `
+  -p:DebugType=none -p:DebugSymbols=false
+```
+
+运行 `publish/framework-dependent/MagicCenterHub.exe` 或 `publish/self-contained/MagicCenterHub.exe`。
+
 ## 命名管道协议
 
 - 管道名：`\\.\pipe\ClaudeCodeMagicCenterHub`
