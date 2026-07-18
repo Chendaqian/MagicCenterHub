@@ -6,7 +6,7 @@
 
 A Windows desktop monitoring widget with real-time hardware metrics and Claude Code hook LED indicator.
 
-[中文文档](README.zh-CN.md)
+[中文文档](https://github.com/Chendaqian/MagicCenterHub/blob/master/README.zh-CN.md)
 
 [![.NET 8](https://img.shields.io/badge/.NET-8-blue)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/UI-WPF-purple)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/)
