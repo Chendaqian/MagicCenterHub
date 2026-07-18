@@ -6,7 +6,7 @@
 
 Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hook LED 灯效指示。
 
-[English](README.md)
+[English](https://github.com/Chendaqian/MagicCenterHub/blob/master/README.md)
 
 [![.NET 8](https://img.shields.io/badge/.NET-8-blue)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/UI-WPF-purple)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/)
