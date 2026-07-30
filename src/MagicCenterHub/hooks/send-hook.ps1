@@ -34,7 +34,7 @@ try {
     "$timestamp - LED Success" | Out-File -FilePath $logFile -Append -Encoding UTF8
 } catch {
     "$timestamp - LED Error: $_" | Out-File -FilePath $logFile -Append -Encoding UTF8
-    Write-Host "Failed to send hook: $_"
+    [Console]::Error.WriteLine("Failed to send hook: $_")
 }
 
 # --- 2. BurntToast 通知（除非 -NoNotify）---
