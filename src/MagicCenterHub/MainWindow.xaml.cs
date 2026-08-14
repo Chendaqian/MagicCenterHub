@@ -99,7 +99,40 @@ public partial class MainWindow : Window
 
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        RestoreNormalWindowState();
+        Focus();
         DragMove();
+    }
+
+    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        RestoreNormalWindowState();
+        double step = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1;
+        double left = Left;
+        double top = Top;
+
+        switch (e.Key)
+        {
+            case Key.Left:
+                left -= step;
+                break;
+            case Key.Right:
+                left += step;
+                break;
+            case Key.Up:
+                top -= step;
+                break;
+            case Key.Down:
+                top += step;
+                break;
+            default:
+                return;
+        }
+
+        Left = left;
+        Top = top;
+        SaveWindowPosition();
+        e.Handled = true;
     }
 
     private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -176,9 +209,18 @@ public partial class MainWindow : Window
 
     private void SaveWindowPosition()
     {
+        RestoreNormalWindowState();
         _settings.WindowLeft = Left;
         _settings.WindowTop = Top;
         SettingsService.Save(_settings);
+    }
+
+    private void RestoreNormalWindowState()
+    {
+        if (WindowState == WindowState.Normal)
+            return;
+
+        WindowState = WindowState.Normal;
     }
 
     /// <summary>
@@ -240,6 +282,7 @@ public partial class MainWindow : Window
         System.Windows.Forms.Screen? primary = System.Windows.Forms.Screen.PrimaryScreen;
         if (primary == null) return;
 
+        RestoreNormalWindowState();
         System.Drawing.Rectangle area = primary.WorkingArea;
         double scale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
         Left = area.Left / scale + (area.Width / scale - Width) / 2;
@@ -252,6 +295,7 @@ public partial class MainWindow : Window
     /// </summary>
     public void MoveToPosition(double left, double top)
     {
+        RestoreNormalWindowState();
         Left = left;
         Top = top;
         SaveWindowPosition();

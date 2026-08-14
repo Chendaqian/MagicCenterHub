@@ -4,10 +4,10 @@
         xmlns:local="clr-namespace:MagicCenterHub"
         xmlns:utils="clr-namespace:MagicCenterHub.Utils"
         Title="MagicCenterHub" Width="1428" Height="284"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Focusable="True"
         Topmost="True" ShowInTaskbar="False"
         Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        MouseRightButtonDown="Window_MouseRightButtonDown">
+        MouseRightButtonDown="Window_MouseRightButtonDown" PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
         <utils:PercentToWidthConverter x:Key="PercentToWidthConverter" />
         <SolidColorBrush x:Key="WindowSurface" Color="#171A20" />
