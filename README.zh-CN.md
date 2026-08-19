@@ -213,8 +213,8 @@ dotnet publish src/MagicCenterHub/MagicCenterHub.csproj -c Release `
 
 <a href="https://www.star-history.com/?repos=Chendaqian%2FMagicCenterHub&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&theme=dark&legend=top-left&sealed_token=vOSx2QCsNSXYCVqkOtzjJyf6nSAkoZxEgSDBHPrjKUuFtQgLAgnaFoZsFa3YOTCmiEOQ7ZfLaIAtwREiOTLC05Vjd6wUz9EVQReVpE5aA_9J8xvJGSj8u8I1oF1mt1pTi16wLuCXTJbFCNvLauKK3_UUpy5I6p6_649rodt8lpVVSDWJgcjwrl-7MLiM" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left&sealed_token=vOSx2QCsNSXYCVqkOtzjJyf6nSAkoZxEgSDBHPrjKUuFtQgLAgnaFoZsFa3YOTCmiEOQ7ZfLaIAtwREiOTLC05Vjd6wUz9EVQReVpE5aA_9J8xvJGSj8u8I1oF1mt1pTi16wLuCXTJbFCNvLauKK3_UUpy5I6p6_649rodt8lpVVSDWJgcjwrl-7MLiM" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left&sealed_token=vOSx2QCsNSXYCVqkOtzjJyf6nSAkoZxEgSDBHPrjKUuFtQgLAgnaFoZsFa3YOTCmiEOQ7ZfLaIAtwREiOTLC05Vjd6wUz9EVQReVpE5aA_9J8xvJGSj8u8I1oF1mt1pTi16wLuCXTJbFCNvLauKK3_UUpy5I6p6_649rodt8lpVVSDWJgcjwrl-7MLiM" />
  </picture>
 </a>
