@@ -217,9 +217,9 @@ Run MagicCenterHub from `publish/framework-dependent/MagicCenterHub.exe` or `pub
 
 <a href="https://www.star-history.com/?repos=Chendaqian%2FMagicCenterHub&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&theme=dark&legend=top-left&sealed_token=-QXmlZwTkvTa0aqIYzvjJGxct5GdTZwlOZtNHqwnf2a5UKxRv4Ba5fXmOrY6mMBpZKd6lV1YUe03Q7K6nKff6qMkDvCOrMier7QvXEx1n_JiTh6fdnXplDdaI292dBJtnY_tTv5L8gOXvnF5fgKgMNuD2nsW64cWQsrNnLLgizL9rsaaA0EdEqIsAhFI" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left&sealed_token=-QXmlZwTkvTa0aqIYzvjJGxct5GdTZwlOZtNHqwnf2a5UKxRv4Ba5fXmOrY6mMBpZKd6lV1YUe03Q7K6nKff6qMkDvCOrMier7QvXEx1n_JiTh6fdnXplDdaI292dBJtnY_tTv5L8gOXvnF5fgKgMNuD2nsW64cWQsrNnLLgizL9rsaaA0EdEqIsAhFI" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Chendaqian/MagicCenterHub&type=date&legend=top-left&sealed_token=-QXmlZwTkvTa0aqIYzvjJGxct5GdTZwlOZtNHqwnf2a5UKxRv4Ba5fXmOrY6mMBpZKd6lV1YUe03Q7K6nKff6qMkDvCOrMier7QvXEx1n_JiTh6fdnXplDdaI292dBJtnY_tTv5L8gOXvnF5fgKgMNuD2nsW64cWQsrNnLLgizL9rsaaA0EdEqIsAhFI" />
  </picture>
 </a>
 
