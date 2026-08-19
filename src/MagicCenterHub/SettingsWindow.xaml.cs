@@ -238,7 +238,27 @@ public partial class SettingsWindow : Window
         return null;
     }
 
+    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Escape)
+            return;
+
+        Close();
+        e.Handled = true;
+    }
+
+    private void Apply_Click(object sender, RoutedEventArgs e)
+    {
+        SaveSettings();
+    }
+
     private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        SaveSettings();
+        Close();
+    }
+
+    private void SaveSettings()
     {
         // 开机启动
         try

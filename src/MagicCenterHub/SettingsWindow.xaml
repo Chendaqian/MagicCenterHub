@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="设置" Width="420" Height="720"
         WindowStartupLocation="CenterScreen" Background="#2A2A2E"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
         <Style x:Key="LabelStyle" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
@@ -304,9 +304,13 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- 固定在底部的保存按钮和状态 -->
+        <!-- 固定在底部的操作按钮和状态 -->
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,10,10,0">
-            <Button Content="保存" Style="{StaticResource SaveBtn}" Width="100" Click="Save_Click" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="应用" Style="{StaticResource SaveBtn}" Width="100" Margin="0,15,8,0"
+                        Click="Apply_Click" />
+                <Button Content="保存" Style="{StaticResource SaveBtn}" Width="100" Click="Save_Click" />
+            </StackPanel>
             <TextBlock x:Name="StatusText" Text="" FontFamily="Segoe UI" FontSize="12"
                        Foreground="#6FCF6F" HorizontalAlignment="Center" Margin="0,8,0,0" />
         </StackPanel>

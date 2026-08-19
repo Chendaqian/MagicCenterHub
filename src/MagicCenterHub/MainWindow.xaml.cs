@@ -15,6 +15,9 @@ namespace MagicCenterHub;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private const string TargetDisplayName = "Lenovo MagicBay HUD";
+    private const double HudPositionOffsetX = -1;
+    private const double HudPositionOffsetY = -2;
     private readonly MainViewModel _viewModel;
     private readonly HardwareMonitorService _hwMonitor;
     private readonly NamedPipeListenerService _pipeListener;
@@ -168,8 +171,22 @@ public partial class MainWindow : Window
 
     private void RestoreWindowPosition()
     {
-        // 优先使用保存的位置（用户手动调整过的）
-        if (!double.IsNaN(_settings.WindowLeft) && !double.IsNaN(_settings.WindowTop))
+        // 每次启动都按 HUD 当前的屏幕布局定位，避免显示器排列变化后沿用旧绝对坐标。
+        WinForms.Screen? hudScreen = DisplayLocator.FindScreen(TargetDisplayName);
+        if (hudScreen != null)
+        {
+            Drawing.Rectangle bounds = hudScreen.Bounds;
+            // 窗口此时仍使用启动屏幕的 DPI；先反算 DIP，避免跨屏时坐标被再次缩放。
+            Matrix transform = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice
+                ?? Matrix.Identity;
+            Left = (bounds.Left + HudPositionOffsetX) / transform.M11;
+            Top = (bounds.Top + HudPositionOffsetY) / transform.M22;
+            return;
+        }
+
+        // HUD 未连接或无法识别时，回退到用户保存的位置。
+        if (!double.IsNaN(_settings.WindowLeft) && !double.IsNaN(_settings.WindowTop) &&
+            _settings.WindowLeft != -1 && _settings.WindowTop != -1)
         {
             Left = _settings.WindowLeft;
             Top = _settings.WindowTop;
@@ -177,7 +194,7 @@ public partial class MainWindow : Window
         }
 
         // 首次启动：找最接近窗口尺寸的小屏幕
-        System.Windows.Forms.Screen? bestScreen = FindBestScreen();
+        WinForms.Screen? bestScreen = FindBestScreen();
         if (bestScreen != null)
         {
             System.Drawing.Rectangle area = bestScreen.WorkingArea;
