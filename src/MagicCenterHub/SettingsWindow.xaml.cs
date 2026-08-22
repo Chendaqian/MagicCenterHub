@@ -96,6 +96,13 @@ public partial class SettingsWindow : Window
 
         // 采集间隔
         TxtPollInterval.Text = _settings.PollIntervalMs.ToString();
+        ChkHwInfoScheduledRestart.IsChecked = _settings.HwInfoScheduledRestartEnabled;
+        int restartInterval = _settings.HwInfoRestartIntervalHours;
+        CmbHwInfoRestartInterval.SelectedIndex = CmbHwInfoRestartInterval.Items.Cast<ComboBoxItem>()
+            .ToList()
+            .FindIndex(item => item.Tag is string tag && int.TryParse(tag, out int hours) && hours == restartInterval);
+        if (CmbHwInfoRestartInterval.SelectedIndex < 0)
+            CmbHwInfoRestartInterval.SelectedIndex = 6;
 
         // 温度上限
         TxtCpuMaxTemp.Text = _settings.CpuMaxTempC.ToString("F0");
@@ -286,11 +293,11 @@ public partial class SettingsWindow : Window
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
-        SaveSettings();
-        Close();
+        if (SaveSettings())
+            Close();
     }
 
-    private void SaveSettings()
+    private bool SaveSettings()
     {
         // 开机启动
         try
@@ -320,6 +327,12 @@ public partial class SettingsWindow : Window
         // 采集间隔
         if (int.TryParse(TxtPollInterval.Text, out int pollMs) && pollMs >= 500)
             _settings.PollIntervalMs = pollMs;
+        _settings.HwInfoScheduledRestartEnabled = ChkHwInfoScheduledRestart.IsChecked == true;
+        if (CmbHwInfoRestartInterval.SelectedItem is ComboBoxItem selectedInterval &&
+            int.TryParse(selectedInterval.Tag?.ToString(), out int restartInterval))
+        {
+            _settings.HwInfoRestartIntervalHours = restartInterval;
+        }
 
         // 温度上限
         if (double.TryParse(TxtCpuMaxTemp.Text, out double cpuMax))
@@ -351,6 +364,7 @@ public partial class SettingsWindow : Window
         _onSaved?.Invoke(_settings);
 
         StatusText.Text = "已保存";
+        return true;
     }
 
     private void ShowStatus(string message)
@@ -363,6 +377,37 @@ public partial class SettingsWindow : Window
     {
         StatusText.Text = message;
         StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xF0, 0x60, 0x80));
+    }
+
+    private void RestartHwInfo_Click(object sender, RoutedEventArgs e)
+    {
+        BtnRestartHwInfo.IsEnabled = false;
+        try
+        {
+            using HwInfoRestartService service = new();
+            if (service.RestartNow())
+                ShowStatus("HWiNFO 已重启");
+            else
+                ShowError("HWiNFO 重启失败，请确认 HWiNFO64 已安装或正在运行");
+        }
+        finally
+        {
+            BtnRestartHwInfo.IsEnabled = true;
+        }
+    }
+
+    private void TabControl_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (FindAncestor<TabItem>((DependencyObject)e.OriginalSource) == null ||
+            sender is not TabControl tabControl || tabControl.Items.Count == 0)
+        {
+            return;
+        }
+
+        int direction = e.Delta < 0 ? 1 : -1;
+        int nextIndex = (tabControl.SelectedIndex + direction + tabControl.Items.Count) % tabControl.Items.Count;
+        tabControl.SelectedIndex = nextIndex;
+        e.Handled = true;
     }
 
     private void OpenLink_RequestNavigate(object sender, RequestNavigateEventArgs e)

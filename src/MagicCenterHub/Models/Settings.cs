@@ -54,6 +54,16 @@ public class Settings
     /// LED 灯效空闲恢复时间（秒）。灯效改变后经过此时间自动恢复为 DefaultLedMode。0 表示不自动恢复
     /// </summary>
     public int LedIdleRestoreSeconds { get; set; } = 0;
+
+    /// <summary>
+    /// 是否启用 HWiNFO 定时重启
+    /// </summary>
+    public bool HwInfoScheduledRestartEnabled { get; set; } = false;
+
+    /// <summary>
+    /// HWiNFO 定时重启间隔（小时）
+    /// </summary>
+    public int HwInfoRestartIntervalHours { get; set; } = 11;
 }
 
 /// <summary>

@@ -356,4 +356,5 @@ internal static partial class NativeMethods
     [System.Runtime.InteropServices.LibraryImport("user32.dll")]
     [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
     public static partial bool SetForegroundWindow(IntPtr hWnd);
+
 }
