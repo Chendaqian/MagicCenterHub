@@ -6,6 +6,14 @@ $ErrorActionPreference = 'Stop'
 
 $projectPath = Join-Path $PSScriptRoot '..\src\MagicCenterHub\MagicCenterHub.csproj'
 $resolvedOutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)
+$runningProcesses = @(Get-Process -Name 'MagicCenterHub' -ErrorAction SilentlyContinue)
+
+if ($runningProcesses.Count -gt 0) {
+    Write-Host '检测到 MagicCenterHub 正在运行，正在结束进程...' -ForegroundColor Yellow
+    $runningProcesses | Stop-Process -Force
+    $runningProcesses | ForEach-Object { $_.WaitForExit() }
+    Write-Host 'MagicCenterHub 进程已结束。' -ForegroundColor Green
+}
 
 Write-Host "发布项目: $projectPath" -ForegroundColor Cyan
 

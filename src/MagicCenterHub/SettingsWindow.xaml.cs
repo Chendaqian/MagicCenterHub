@@ -3,10 +3,16 @@ using MagicCenterHub.Services;
 using MagicCenterHub.Utils;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace MagicCenterHub;
 
@@ -17,6 +23,9 @@ public partial class SettingsWindow : Window
 {
     private const string AppName = "MagicCenterHub";
     private const string RegRunKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+    private const string LatestReleaseApiUrl = "https://api.github.com/repos/ChenDaqian/MagicCenterHub/releases/latest";
+    private const string LatestReleaseUrl = "https://github.com/ChenDaqian/MagicCenterHub/releases/latest";
+    private static readonly HttpClient UpdateHttpClient = CreateUpdateHttpClient();
     private readonly Settings _settings;
     private readonly Action<Settings>? _onSaved;
     private readonly Action? _onPresetsChanged;
@@ -36,8 +45,31 @@ public partial class SettingsWindow : Window
         _onSaved = onSaved;
         _onPresetsChanged = onPresetsChanged;
         Icon = IconHelper.CreateIcon("⚙", 0x7D, 0xD4, 0xD4);
+        TxtAppVersion.Text = $"当前版本：{GetCurrentVersionText()}";
         LoadValues();
         LoadPresets();
+    }
+
+    private static HttpClient CreateUpdateHttpClient()
+    {
+        HttpClient client = new()
+        {
+            Timeout = TimeSpan.FromSeconds(10)
+        };
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("MagicCenterHub");
+        return client;
+    }
+
+    private static Version CurrentVersion => Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 0, 0);
+
+    private static string GetCurrentVersionText()
+    {
+        return FormatVersion(CurrentVersion);
+    }
+
+    private static string FormatVersion(Version version)
+    {
+        return $"v{version.Major}.{version.Minor}.{Math.Max(version.Build, 0)}";
     }
 
     private void LoadValues()
@@ -331,6 +363,157 @@ public partial class SettingsWindow : Window
     {
         StatusText.Text = message;
         StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xF0, 0x60, 0x80));
+    }
+
+    private void OpenLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        OpenUrl(e.Uri.AbsoluteUri);
+        e.Handled = true;
+    }
+
+    private static void OpenUrl(string url)
+    {
+        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
+
+    private void CheckUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (!BtnCheckUpdate.IsEnabled)
+            return;
+
+        BtnCheckUpdate.IsEnabled = false;
+        UpdateStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+        UpdateStatusText.Text = "正在检查更新...";
+        _ = CheckForUpdatesAsync();
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            (Version latestVersion, string releaseUrl) = await GetLatestReleaseAsync();
+
+            if (latestVersion > CurrentVersion)
+            {
+                UpdateStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+                UpdateStatusText.Text = $"发现新版本：{FormatVersion(latestVersion)}";
+                MessageBox.Show(this,
+                    $"当前版本：{FormatVersion(CurrentVersion)}\n最新版本：{FormatVersion(latestVersion)}\n\n即将打开 GitHub Release 页面。",
+                    "检查更新",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                OpenUrl(releaseUrl);
+            }
+            else
+            {
+                UpdateStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+                UpdateStatusText.Text = "当前已是最新版本，无需更新。";
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatusText.Foreground = new SolidColorBrush(Color.FromRgb(0xF0, 0x60, 0x80));
+            UpdateStatusText.Text = "无法完成更新检查。";
+            MessageBox.Show(this, $"无法完成更新检查：{ex.Message}", "检查更新",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            BtnCheckUpdate.IsEnabled = true;
+        }
+    }
+
+    private static async Task<(Version Version, string Url)> GetLatestReleaseAsync()
+    {
+        try
+        {
+            return await GetLatestReleaseFromApiAsync();
+        }
+        catch (Exception apiException)
+        {
+            try
+            {
+                return await GetLatestReleaseFromPageAsync();
+            }
+            catch (Exception pageException)
+            {
+                throw new InvalidOperationException(
+                    $"GitHub API 和 Release 页面均无法访问：{pageException.Message}", apiException);
+            }
+        }
+    }
+
+    private static async Task<(Version Version, string Url)> GetLatestReleaseFromApiAsync()
+    {
+        using HttpResponseMessage response = await UpdateHttpClient.GetAsync(LatestReleaseApiUrl);
+        response.EnsureSuccessStatusCode();
+
+        await using Stream responseStream = await response.Content.ReadAsStreamAsync();
+        using JsonDocument document = await JsonDocument.ParseAsync(responseStream);
+        JsonElement root = document.RootElement;
+
+        if (!root.TryGetProperty("tag_name", out JsonElement tagElement) ||
+            !TryParseReleaseVersion(tagElement.GetString(), out Version latestVersion))
+        {
+            throw new InvalidOperationException("GitHub Release 版本无效。");
+        }
+
+        string releaseUrl = LatestReleaseUrl;
+        if (root.TryGetProperty("html_url", out JsonElement urlElement) &&
+            Uri.TryCreate(urlElement.GetString(), UriKind.Absolute, out Uri? parsedUrl) &&
+            parsedUrl.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase))
+        {
+            releaseUrl = parsedUrl.AbsoluteUri;
+        }
+
+        return (latestVersion, releaseUrl);
+    }
+
+    private static async Task<(Version Version, string Url)> GetLatestReleaseFromPageAsync()
+    {
+        using HttpResponseMessage response = await UpdateHttpClient.GetAsync(
+            LatestReleaseUrl, HttpCompletionOption.ResponseHeadersRead);
+        response.EnsureSuccessStatusCode();
+
+        Uri? finalUri = response.RequestMessage?.RequestUri;
+        string? tagName = finalUri?.Segments.LastOrDefault()?.Trim('/');
+        string releaseUrl = finalUri?.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase) == true
+            ? finalUri.AbsoluteUri
+            : LatestReleaseUrl;
+
+        string pageContent = await response.Content.ReadAsStringAsync();
+        if (!TryParseReleaseVersion(tagName, out Version latestVersion))
+        {
+            Match tagMatch = Regex.Match(
+                pageContent,
+                @"/ChenDaqian/MagicCenterHub/releases/tag/([^""/?<]+)",
+                RegexOptions.IgnoreCase);
+            tagName = tagMatch.Success ? tagMatch.Groups[1].Value : null;
+            releaseUrl = tagName == null ? releaseUrl :
+                $"https://github.com/ChenDaqian/MagicCenterHub/releases/tag/{tagName}";
+        }
+
+        if (!TryParseReleaseVersion(tagName, out latestVersion))
+            throw new InvalidOperationException("无法从 GitHub Release 页面读取版本。");
+
+        return (latestVersion, releaseUrl);
+    }
+
+    private static bool TryParseReleaseVersion(string? tagName, out Version version)
+    {
+        version = new Version(0, 0, 0);
+        if (string.IsNullOrWhiteSpace(tagName))
+            return false;
+
+        string normalized = tagName.Trim().TrimStart('v', 'V');
+        int suffixIndex = normalized.IndexOfAny(['-', '+']);
+        if (suffixIndex >= 0)
+            normalized = normalized[..suffixIndex];
+
+        if (!Version.TryParse(normalized, out Version? parsedVersion) || parsedVersion == null)
+            return false;
+
+        version = parsedVersion;
+        return true;
     }
 
     /// <summary>

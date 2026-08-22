@@ -1,12 +1,20 @@
-# 发布脚本 - 创建 tag 并推送触发 GitHub Action 自动发布
-# 用法: .\publish.ps1 1.0.0
+# 发布脚本 - 根据项目程序集版本创建 tag，并推送触发 GitHub Action 自动发布
 
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$Version
-)
+$ErrorActionPreference = 'Stop'
 
-$tag = "v$Version"
+$projectPath = Join-Path $PSScriptRoot '..\src\MagicCenterHub\MagicCenterHub.csproj'
+$versionOutput = dotnet msbuild $projectPath -getProperty:Version | Out-String
+if ($LASTEXITCODE -ne 0) {
+    throw '无法读取项目程序集版本。'
+}
+
+$version = $versionOutput.Trim()
+
+if ([string]::IsNullOrWhiteSpace($version) -or $version -notmatch '^\d+\.\d+\.\d+$') {
+    throw "项目版本 '$version' 不是有效的三段式版本号。"
+}
+
+$tag = "v$version"
 
 Write-Host "准备发布版本: $tag" -ForegroundColor Cyan
 
@@ -24,8 +32,8 @@ if ($status) {
 
 # 创建 tag 并推送
 Write-Host "创建 tag: $tag" -ForegroundColor Green
-git tag -a $tag -m "Release $tag"
+git tag -a $tag -m $tag
 git push origin $tag
 
-Write-Host "已推送 tag $tag，GitHub Action 将自动构建并发布" -ForegroundColor Green
+Write-Host "已推送 tag $tag，GitHub Action 将自动构建并发布，Release title 为 $tag" -ForegroundColor Green
 Write-Host "查看发布进度: https://github.com/$(git remote get-url origin | ForEach-Object { $_ -replace '.*github.com[:/](.+)\.git$', '$1' })/actions" -ForegroundColor Cyan

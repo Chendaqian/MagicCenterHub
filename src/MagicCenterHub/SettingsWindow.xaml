@@ -1,7 +1,7 @@
 <Window x:Class="MagicCenterHub.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="设置" Width="420" Height="720"
+        Title="设置" Width="680" Height="620"
         WindowStartupLocation="CenterScreen" Background="#2A2A2E"
         ResizeMode="NoResize" PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
@@ -39,276 +39,344 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Margin" Value="0,15,0,0" />
         </Style>
+        <Style x:Key="TabHeaderStyle" TargetType="TabItem">
+            <Setter Property="Width" Value="112" />
+            <Setter Property="Height" Value="42" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="#D3D0D0" />
+            <Setter Property="Background" Value="#2A2A2E" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabBorder" Background="{TemplateBinding Background}"
+                                BorderBrush="#555" BorderThickness="0,0,0,1"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="#7DD4D4" />
+                                <Setter TargetName="TabBorder" Property="Background" Value="#3C3C42" />
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#7DD4D4" />
+                                <Setter TargetName="TabBorder" Property="BorderThickness" Value="3,0,0,1" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#35353B" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SettingsTabControlStyle" TargetType="TabControl">
+            <Setter Property="Background" Value="#303036" />
+            <Setter Property="BorderBrush" Value="#555" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="112" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TabPanel Grid.Column="0" IsItemsHost="True" Background="#2A2A2E" />
+                            <Border Grid.Column="1" Background="#303036" BorderBrush="#555" BorderThickness="1,0,0,1">
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentSource="SelectedContent" />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Grid Margin="20" Cursor="Hand">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- 可滚动的设置内容 -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
-            <StackPanel Margin="0,0,10,0">
-                <!-- 通用 -->
-                <TextBlock Text="通用" Style="{StaticResource SectionHeader}" />
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="ChkAutoStart" Content="开机自启动" FontFamily="Segoe UI" FontSize="13"
-                              Foreground="#D3D0D0" Grid.Column="0" />
-                </Grid>
-                <Grid Margin="0,8,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="ChkTopMost" Content="窗口置顶" FontFamily="Segoe UI" FontSize="13"
-                              Foreground="#D3D0D0" Grid.Column="0" />
-                </Grid>
-
-                <!-- 窗口位置 -->
-                <TextBlock Text="窗口位置" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="20" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="X：" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtWinLeft" Style="{StaticResource InputStyle}" Grid.Column="1" Width="60" />
-                    <TextBlock Text="Y：" Style="{StaticResource LabelStyle}" Grid.Column="3" />
-                    <TextBox x:Name="TxtWinTop" Style="{StaticResource InputStyle}" Grid.Column="4" Width="60" />
-                    <Button x:Name="BtnCapturePos" Content="取当前" Grid.Column="6"
-                            FontFamily="Segoe UI" FontSize="11" Background="#3C3C42" Foreground="#D3D0D0"
-                            BorderBrush="#555" Padding="8,3" Cursor="Hand" Click="CapturePos_Click" />
-                </Grid>
-
-                <!-- 位置预设 -->
-                <TextBlock Text="位置预设" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox x:Name="TxtPresetName" FontFamily="Segoe UI" FontSize="13" Background="#3C3C42"
-                             Foreground="#E0E0E0" BorderBrush="#555" Padding="6,4" />
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="6,0,0,0">
-                        <Button x:Name="BtnSavePreset" Content="保存当前位置" FontFamily="Segoe UI" FontSize="11"
-                                Background="#3C3C42" Foreground="#D3D0D0" BorderBrush="#555" Padding="8,3"
-                                Cursor="Hand" Click="SavePreset_Click" />
+        <TabControl Grid.Row="0" Style="{StaticResource SettingsTabControlStyle}"
+                    TabStripPlacement="Left" ItemContainerStyle="{StaticResource TabHeaderStyle}">
+            <TabItem Header="通用">
+                <ScrollViewer Background="#303036" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
+                    <StackPanel Margin="8,0,12,0">
+                        <TextBlock Text="通用" Style="{StaticResource SectionHeader}" />
+                        <CheckBox x:Name="ChkAutoStart" Content="开机自启动" FontFamily="Segoe UI" FontSize="13"
+                                  Foreground="#D3D0D0" Margin="0,0,0,12" />
+                        <CheckBox x:Name="ChkTopMost" Content="窗口置顶" FontFamily="Segoe UI" FontSize="13"
+                                  Foreground="#D3D0D0" />
                     </StackPanel>
-                </Grid>
-                <ListBox x:Name="PresetList" Margin="0,4,0,0" Background="Transparent" BorderThickness="0"
-                         AllowDrop="True"
-                         PreviewMouseLeftButtonDown="PresetList_PreviewMouseLeftButtonDown"
-                         PreviewMouseMove="PresetList_PreviewMouseMove"
-                         Drop="PresetList_Drop"
-                         DragOver="PresetList_DragOver">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,0,0,4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="⠿" FontFamily="Segoe UI" FontSize="14" Foreground="#555"
-                                           VerticalAlignment="Center" HorizontalAlignment="Center" Cursor="SizeNS" />
-                                <TextBlock Text="{Binding Name}" Grid.Column="1" FontFamily="Segoe UI" FontSize="13" Foreground="#D3D0D0"
-                                           VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="8,0,0,0">
-                                    <Run Text=" X:" Foreground="#888" FontFamily="Segoe UI" FontSize="11" />
-                                    <Run Text="{Binding Left, StringFormat=F0}" Foreground="#999" FontFamily="Segoe UI" FontSize="11" />
-                                    <Run Text=" Y:" Foreground="#888" FontFamily="Segoe UI" FontSize="11" />
-                                    <Run Text="{Binding Top, StringFormat=F0}" Foreground="#999" FontFamily="Segoe UI" FontSize="11" />
-                                </TextBlock>
-                                <Button Content="跳转" Grid.Column="4" FontFamily="Segoe UI" FontSize="11"
-                                        Background="#3C3C42" Foreground="#D3D0D0" BorderBrush="#555" Padding="8,3"
-                                        Cursor="Hand" Margin="8,0,0,0" Click="GotoPreset_Click" Tag="{Binding}" />
-                                <Button Content="删除" Grid.Column="5" FontFamily="Segoe UI" FontSize="11"
-                                        Background="#3C3C42" Foreground="#F06080" BorderBrush="#555" Padding="8,3"
-                                        Cursor="Hand" Margin="4,0,0,0" Click="DeletePreset_Click" Tag="{Binding}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                                Padding="{TemplateBinding Padding}" Margin="0,-1,0,0">
-                                            <ContentPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#337DD4D4" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                </ScrollViewer>
+            </TabItem>
 
-                <!-- 采集间隔 -->
-                <TextBlock Text="采集间隔" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="硬件轮询间隔 (ms)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtPollInterval" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
+            <TabItem Header="窗口位置">
+                <ScrollViewer Background="#303036" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
+                    <StackPanel Margin="8,0,12,0">
+                        <TextBlock Text="窗口位置" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="X：" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtWinLeft" Style="{StaticResource InputStyle}" Grid.Column="1" Width="60" />
+                            <TextBlock Text="Y：" Style="{StaticResource LabelStyle}" Grid.Column="3" />
+                            <TextBox x:Name="TxtWinTop" Style="{StaticResource InputStyle}" Grid.Column="4" Width="60" />
+                            <Button x:Name="BtnCapturePos" Content="取当前" Grid.Column="6"
+                                    FontFamily="Segoe UI" FontSize="11" Background="#3C3C42" Foreground="#D3D0D0"
+                                    BorderBrush="#555" Padding="8,3" Cursor="Hand" Click="CapturePos_Click" />
+                        </Grid>
 
-                <!-- 温度上限 -->
-                <TextBlock Text="温度上限" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="CPU 最高温度 (°C)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtCpuMaxTemp" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="GPU 最高温度 (°C)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtGpuMaxTemp" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
+                        <TextBlock Text="位置预设" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="TxtPresetName" FontFamily="Segoe UI" FontSize="13" Background="#3C3C42"
+                                     Foreground="#E0E0E0" BorderBrush="#555" Padding="6,4" />
+                            <Button x:Name="BtnSavePreset" Content="保存当前位置" Grid.Column="1" FontFamily="Segoe UI" FontSize="11"
+                                    Background="#3C3C42" Foreground="#D3D0D0" BorderBrush="#555" Padding="8,3"
+                                    Cursor="Hand" Margin="6,0,0,0" Click="SavePreset_Click" />
+                        </Grid>
+                        <ListBox x:Name="PresetList" Margin="0,4,0,0" Background="Transparent" BorderThickness="0"
+                                 AllowDrop="True" PreviewMouseLeftButtonDown="PresetList_PreviewMouseLeftButtonDown"
+                                 PreviewMouseMove="PresetList_PreviewMouseMove" Drop="PresetList_Drop"
+                                 DragOver="PresetList_DragOver">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="⠿" FontFamily="Segoe UI" FontSize="14" Foreground="#555"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Cursor="SizeNS" />
+                                        <TextBlock Text="{Binding Name}" Grid.Column="1" FontFamily="Segoe UI" FontSize="13"
+                                                   Foreground="#D3D0D0" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="8,0,0,0">
+                                            <Run Text=" X:" Foreground="#888" FontFamily="Segoe UI" FontSize="11" />
+                                            <Run Text="{Binding Left, StringFormat=F0}" Foreground="#999" FontFamily="Segoe UI" FontSize="11" />
+                                            <Run Text=" Y:" Foreground="#888" FontFamily="Segoe UI" FontSize="11" />
+                                            <Run Text="{Binding Top, StringFormat=F0}" Foreground="#999" FontFamily="Segoe UI" FontSize="11" />
+                                        </TextBlock>
+                                        <Button Content="跳转" Grid.Column="4" FontFamily="Segoe UI" FontSize="11"
+                                                Background="#3C3C42" Foreground="#D3D0D0" BorderBrush="#555" Padding="8,3"
+                                                Cursor="Hand" Margin="8,0,0,0" Click="GotoPreset_Click" Tag="{Binding}" />
+                                        <Button Content="删除" Grid.Column="5" FontFamily="Segoe UI" FontSize="11"
+                                                Background="#3C3C42" Foreground="#F06080" BorderBrush="#555" Padding="8,3"
+                                                Cursor="Hand" Margin="4,0,0,0" Click="DeletePreset_Click" Tag="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}" Margin="0,-1,0,0">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background" Value="#337DD4D4" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
 
-                <!-- 颜色阈值 - 使用率 -->
-                <TextBlock Text="使用率颜色阈值" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="绿色上限 (%)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtUsageGreen" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="黄色上限 (%)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtUsageYellow" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
+            <TabItem Header="硬件监控">
+                <ScrollViewer Background="#303036" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
+                    <StackPanel Margin="8,0,12,0">
+                        <TextBlock Text="采集间隔" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="硬件轮询间隔 (ms)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtPollInterval" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
 
-                <!-- 颜色阈值 - 温度 -->
-                <TextBlock Text="温度颜色阈值" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="绿色上限 (°C)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtTempGreen" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="黄色上限 (°C)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtTempYellow" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
+                        <TextBlock Text="温度上限" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="CPU 最高温度 (°C)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtCpuMaxTemp" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="GPU 最高温度 (°C)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtGpuMaxTemp" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
 
-                <!-- LED 灯效 -->
-                <TextBlock Text="LED 灯效" Style="{StaticResource SectionHeader}" />
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="默认灯效模式 (0-19)" Style="{StaticResource LabelStyle}" />
-                    <ComboBox x:Name="CmbDefaultLedMode" Grid.Column="1" Width="120"
-                              FontFamily="Segoe UI" FontSize="13" Background="#3C3C42"
-                              Foreground="#E0E0E0" BorderBrush="#555" Padding="4,3">
-                        <ComboBox.ItemContainerStyle>
-                            <Style TargetType="ComboBoxItem">
-                                <Setter Property="Foreground" Value="#E0E0E0" />
-                                <Setter Property="Background" Value="#3C3C42" />
-                                <Setter Property="Padding" Value="6,4" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ComboBoxItem">
-                                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter />
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsHighlighted" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#4A4A50" />
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#337DD4D4" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ComboBox.ItemContainerStyle>
-                        <ComboBoxItem Content="0 - 全灭" Tag="0" />
-                        <ComboBoxItem Content="1 - 同闪" Tag="1" />
-                        <ComboBoxItem Content="2 - 绿闪" Tag="2" />
-                        <ComboBoxItem Content="3 - 红闪" Tag="3" />
-                        <ComboBoxItem Content="4 - 黄闪" Tag="4" />
-                        <ComboBoxItem Content="5 - 绿亮" Tag="5" />
-                        <ComboBoxItem Content="6 - 红亮" Tag="6" />
-                        <ComboBoxItem Content="7 - 黄亮" Tag="7" />
-                        <ComboBoxItem Content="8 - 全亮" Tag="8" />
-                        <ComboBoxItem Content="9 - 警车" Tag="9" />
-                        <ComboBoxItem Content="10 - 心跳" Tag="10" />
-                        <ComboBoxItem Content="11 - SOS" Tag="11" />
-                        <ComboBoxItem Content="12 - 呼吸" Tag="12" />
-                        <ComboBoxItem Content="13 - 萤火虫" Tag="13" />
-                        <ComboBoxItem Content="14 - 心电" Tag="14" />
-                        <ComboBoxItem Content="15 - 跑马" Tag="15" />
-                        <ComboBoxItem Content="16 - 爆闪" Tag="16" />
-                        <ComboBoxItem Content="17 - 太极" Tag="17" />
-                        <ComboBoxItem Content="18 - HELLO" Tag="18" />
-                        <ComboBoxItem Content="19 - 雷达" Tag="19" />
-                    </ComboBox>
-                </Grid>
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="空闲恢复时间 (秒)" Style="{StaticResource LabelStyle}" />
-                    <TextBox x:Name="TxtLedIdleRestore" Style="{StaticResource InputStyle}" Grid.Column="1" />
-                </Grid>
-                <TextBlock Text="设置为 0 表示不自动恢复" FontFamily="Segoe UI" FontSize="11"
-                           Foreground="#888" Margin="0,2,0,0" />
-            </StackPanel>
-        </ScrollViewer>
+                        <TextBlock Text="使用率颜色阈值" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="绿色上限 (%)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtUsageGreen" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="黄色上限 (%)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtUsageYellow" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
 
-        <!-- 固定在底部的操作按钮和状态 -->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,10,10,0">
+                        <TextBlock Text="温度颜色阈值" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="绿色上限 (°C)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtTempGreen" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="黄色上限 (°C)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtTempYellow" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="LED 灯效">
+                <ScrollViewer Background="#303036" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
+                    <StackPanel Margin="8,0,12,0">
+                        <TextBlock Text="LED 灯效" Style="{StaticResource SectionHeader}" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="默认灯效模式 (0-19)" Style="{StaticResource LabelStyle}" />
+                            <ComboBox x:Name="CmbDefaultLedMode" Grid.Column="1" Width="140"
+                                      FontFamily="Segoe UI" FontSize="13" Background="#3C3C42"
+                                      Foreground="#E0E0E0" BorderBrush="#555" Padding="4,3">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="#E0E0E0" />
+                                        <Setter Property="Background" Value="#3C3C42" />
+                                        <Setter Property="Padding" Value="6,4" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ComboBoxItem">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsHighlighted" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#4A4A50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#337DD4D4" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <ComboBoxItem Content="0 - 全灭" Tag="0" />
+                                <ComboBoxItem Content="1 - 同闪" Tag="1" />
+                                <ComboBoxItem Content="2 - 绿闪" Tag="2" />
+                                <ComboBoxItem Content="3 - 红闪" Tag="3" />
+                                <ComboBoxItem Content="4 - 黄闪" Tag="4" />
+                                <ComboBoxItem Content="5 - 绿亮" Tag="5" />
+                                <ComboBoxItem Content="6 - 红亮" Tag="6" />
+                                <ComboBoxItem Content="7 - 黄亮" Tag="7" />
+                                <ComboBoxItem Content="8 - 全亮" Tag="8" />
+                                <ComboBoxItem Content="9 - 警车" Tag="9" />
+                                <ComboBoxItem Content="10 - 心跳" Tag="10" />
+                                <ComboBoxItem Content="11 - SOS" Tag="11" />
+                                <ComboBoxItem Content="12 - 呼吸" Tag="12" />
+                                <ComboBoxItem Content="13 - 萤火虫" Tag="13" />
+                                <ComboBoxItem Content="14 - 心电" Tag="14" />
+                                <ComboBoxItem Content="15 - 跑马" Tag="15" />
+                                <ComboBoxItem Content="16 - 爆闪" Tag="16" />
+                                <ComboBoxItem Content="17 - 太极" Tag="17" />
+                                <ComboBoxItem Content="18 - HELLO" Tag="18" />
+                                <ComboBoxItem Content="19 - 雷达" Tag="19" />
+                            </ComboBox>
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="空闲恢复时间 (秒)" Style="{StaticResource LabelStyle}" />
+                            <TextBox x:Name="TxtLedIdleRestore" Style="{StaticResource InputStyle}" Grid.Column="1" />
+                        </Grid>
+                        <TextBlock Text="设置为 0 表示不自动恢复" FontFamily="Segoe UI" FontSize="11"
+                                   Foreground="#888" Margin="0,2,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="关于">
+                <ScrollViewer Background="#303036" VerticalScrollBarVisibility="Auto" Margin="12,0,0,0">
+                    <StackPanel Margin="8,0,12,0">
+                        <TextBlock Text="MagicCenterHub" FontFamily="Segoe UI" FontSize="22" FontWeight="Bold"
+                                   Foreground="#7DD4D4" Margin="0,16,0,4" />
+                        <TextBlock x:Name="TxtAppVersion" FontFamily="Segoe UI" FontSize="13"
+                                   Foreground="#D3D0D0" Margin="0,0,0,16" />
+
+                        <TextBlock Text="项目链接" Style="{StaticResource SectionHeader}" />
+                        <TextBlock FontFamily="Segoe UI" FontSize="13" Margin="0,0,0,4">
+                            <Hyperlink NavigateUri="https://github.com/ChenDaqian/MagicCenterHub/releases/latest"
+                                       RequestNavigate="OpenLink_RequestNavigate" Foreground="#7DD4D4">GitHub Releases</Hyperlink>
+                        </TextBlock>
+                        <TextBlock FontFamily="Segoe UI" FontSize="13" Margin="0,0,0,12">
+                            <Run Text="作者：" Foreground="#D3D0D0" />
+                            <Hyperlink NavigateUri="https://github.com/Chendaqian"
+                                       RequestNavigate="OpenLink_RequestNavigate" Foreground="#7DD4D4">Chendaqian</Hyperlink>
+                        </TextBlock>
+
+                        <Button x:Name="BtnCheckUpdate" Content="检查更新" Width="110" HorizontalAlignment="Left"
+                                FontFamily="Segoe UI" FontSize="13" Background="#3C3C42" Foreground="#D3D0D0"
+                                BorderBrush="#555" Padding="8,5" Cursor="Hand" Click="CheckUpdate_Click" />
+                        <TextBlock x:Name="UpdateStatusText" Text="" FontFamily="Segoe UI" FontSize="12"
+                                   Foreground="#6FCF6F" TextWrapping="Wrap" Margin="0,8,0,0" />
+
+                        <TextBlock Text="技术栈" Style="{StaticResource SectionHeader}" />
+                        <TextBlock FontFamily="Segoe UI" FontSize="13" Foreground="#D3D0D0" TextWrapping="Wrap">
+                            <Run Text="语言：C# / .NET 8 (net8.0-windows)&#xA;" />
+                            <Run Text="界面：WPF&#xA;" />
+                            <Run Text="硬件数据：HWiNFO64 Shared Memory&#xA;" />
+                            <Run Text="序列化：Newtonsoft.Json&#xA;" />
+                            <Run Text="编码：System.Text.Encoding.CodePages" />
+                        </TextBlock>
+
+                        <TextBlock Text="开源组件与许可" Style="{StaticResource SectionHeader}" />
+                        <TextBlock FontFamily="Segoe UI" FontSize="13" Foreground="#D3D0D0" TextWrapping="Wrap">
+                            <Run Text="Newtonsoft.Json 13.0.4（MIT）&#xA;" />
+                            <Run Text="System.Text.Encoding.CodePages 8.0.0（MIT）&#xA;" />
+                            <Run Text="HWiNFO64 Shared Memory（由 HWiNFO64 提供）&#xA;" />
+                            <Run Text="项目自身代码采用 MIT License" />
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,10,0,0">
             <StackPanel Orientation="Horizontal">
-                <Button Content="应用" Style="{StaticResource SaveBtn}" Width="100" Margin="0,15,8,0"
-                        Click="Apply_Click" />
+                <Button Content="应用" Style="{StaticResource SaveBtn}" Width="100" Margin="0,15,8,0" Click="Apply_Click" />
                 <Button Content="保存" Style="{StaticResource SaveBtn}" Width="100" Click="Save_Click" />
             </StackPanel>
             <TextBlock x:Name="StatusText" Text="" FontFamily="Segoe UI" FontSize="12"
