@@ -8,12 +8,12 @@ public class Settings
     /// <summary>
     /// 窗口 X 坐标（-1 表示自动定位）
     /// </summary>
-    public double WindowLeft { get; set; } = -1;
+    public double WindowLeft { get; set; } = -1499;
 
     /// <summary>
     /// 窗口 Y 坐标（-1 表示自动定位）
     /// </summary>
-    public double WindowTop { get; set; } = -1;
+    public double WindowTop { get; set; } = -769;
 
     /// <summary>
     /// 窗口是否置顶
@@ -53,12 +53,12 @@ public class Settings
     /// <summary>
     /// LED 灯效空闲恢复时间（秒）。灯效改变后经过此时间自动恢复为 DefaultLedMode。0 表示不自动恢复
     /// </summary>
-    public int LedIdleRestoreSeconds { get; set; } = 0;
+    public int LedIdleRestoreSeconds { get; set; } = 600;
 
     /// <summary>
     /// 是否启用 HWiNFO 定时重启
     /// </summary>
-    public bool HwInfoScheduledRestartEnabled { get; set; } = false;
+    public bool HwInfoScheduledRestartEnabled { get; set; } = true;
 
     /// <summary>
     /// HWiNFO 定时重启间隔（小时）

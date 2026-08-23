@@ -87,8 +87,7 @@ Three-color LED (Red/Yellow/Green) reflects Claude Code tool call status in real
 src/MagicCenterHub/
 ├── App.xaml / App.xaml.cs              # Entry: single instance, tray icon, auto-start
 ├── MainWindow.xaml / .cs               # Main window: 1428x284 layout, LED animation loop
-├── LedTestWindow.xaml / .cs            # LED effect test window
-├── SettingsWindow.xaml / .cs           # Settings window
+├── SettingsWindow.xaml / .cs           # Settings, LED tests, and HWiNFO restart controls
 ├── Utils/
 │   ├── PercentToWidthConverter.cs      # Progress bar percentage→width converter
 │   └── IconHelper.cs                   # Icon generation utility
@@ -100,6 +99,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON config persistence
 │   ├── HwInfoProvider.cs               # HWiNFO shared memory reader
 │   ├── HardwareMonitorService.cs       # 1-second polling
+│   ├── HwInfoRestartService.cs         # Scheduled/manual HWiNFO restart
 │   └── NamedPipeListenerService.cs     # Named pipe hook listener
 ├── Effects/
 │   ├── ILedEffect.cs                   # LED effect interface
@@ -122,8 +122,8 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 
 | Field | Description | Default |
 |-------|-------------|---------|
-| WindowLeft | Window X position (-1 = auto) | -1 |
-| WindowTop | Window Y position (-1 = auto) | -1 |
+| WindowLeft | Window X position | -1499 |
+| WindowTop | Window Y position | -769 |
 | WindowTopMost | Always on top | true |
 | PollIntervalMs | HWiNFO polling interval (ms) | 3000 |
 | CpuMaxTempC | CPU max temperature | 100 |
@@ -134,7 +134,11 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 | ColorThresholds.TempYellow | Temperature yellow threshold (°C) | 80 |
 | PositionPresets | Window position presets list | [] |
 | DefaultLedMode | Default LED effect mode (0-19, applied on startup and idle restore) | 17 |
-| LedIdleRestoreSeconds | LED idle restore time in seconds (0 = disabled) | 0 |
+| LedIdleRestoreSeconds | LED idle restore time in seconds (0 = disabled) | 600 |
+| HwInfoScheduledRestartEnabled | Enable scheduled HWiNFO restart | true |
+| HwInfoRestartIntervalHours | HWiNFO restart interval in hours | 11 |
+
+The Settings window provides five sections: General, Window Position, Hardware Monitoring, LED Effects, and About. LED effect testing is available below the LED effect settings. HWiNFO can be restarted manually from the Hardware Monitoring section or automatically at the configured interval.
 
 ## Prerequisites
 

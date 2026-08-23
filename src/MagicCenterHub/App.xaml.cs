@@ -115,21 +115,35 @@ public partial class App : Application
 
         // 菜单项
         menu.Items.Add(CreateMenuItem("显隐主窗口", "☀", (s, e) => ToggleWindow()));
-        menu.Items.Add(CreateMenuItem("LED 灯效测试", "💡", (s, e) => OpenLedTest()));
 
         // 窗口位置子菜单
         WinForms.ToolStripMenuItem posMenu = new WinForms.ToolStripMenuItem("  📍  窗口位置")
         {
             ForeColor = Drawing.Color.FromArgb(220, 220, 220),
             Font = new Drawing.Font("Segoe UI", 10),
-            Padding = new WinForms.Padding(4, 2, 4, 2)
+            Padding = new WinForms.Padding(4, 2, 4, 2),
+            TextAlign = Drawing.ContentAlignment.MiddleLeft
         };
+        if (posMenu.DropDown is WinForms.ToolStripDropDownMenu positionDropDown)
+        {
+            positionDropDown.ShowImageMargin = false;
+            positionDropDown.ShowCheckMargin = false;
+            positionDropDown.Padding = new WinForms.Padding(0);
+            posMenu.DropDownOpened += (s, e) =>
+            {
+                positionDropDown.Location = new Drawing.Point(
+                    positionDropDown.Location.X - 6,
+                    positionDropDown.Location.Y);
+            };
+        }
 
         WinForms.ToolStripMenuItem resetItem = new WinForms.ToolStripMenuItem("  🖥  Default")
         {
             ForeColor = Drawing.Color.FromArgb(220, 220, 220),
             Font = new Drawing.Font("Segoe UI", 10),
-            Padding = new WinForms.Padding(4, 2, 4, 2)
+            Padding = new WinForms.Padding(4, 2, 4, 2),
+            TextAlign = Drawing.ContentAlignment.MiddleLeft,
+            Margin = new WinForms.Padding(0)
         };
         resetItem.Click += (s, e) => _mainWindow?.MoveToPrimaryScreenCenter();
         posMenu.DropDownItems.Add(resetItem);
@@ -139,21 +153,24 @@ public partial class App : Application
         {
             ForeColor = Drawing.Color.FromArgb(220, 220, 220),
             Font = new Drawing.Font("Segoe UI", 10),
-            Padding = new WinForms.Padding(4, 2, 4, 2)
+            Padding = new WinForms.Padding(4, 2, 4, 2),
+            TextAlign = Drawing.ContentAlignment.MiddleLeft,
+            Margin = new WinForms.Padding(0)
         };
         fullScreenItem.Click += (s, e) => _mainWindow?.ToggleFullScreen();
         posMenu.DropDownItems.Add(fullScreenItem);
 
         if (_mainWindow?.Settings.PositionPresets.Count > 0)
         {
-            posMenu.DropDownItems.Add(new WinForms.ToolStripSeparator());
             foreach (WindowPositionPreset preset in _mainWindow.Settings.PositionPresets)
             {
                 WinForms.ToolStripMenuItem presetItem = new WinForms.ToolStripMenuItem($"  📌  {preset.Name}")
                 {
                     ForeColor = Drawing.Color.FromArgb(220, 220, 220),
                     Font = new Drawing.Font("Segoe UI", 10),
-                    Padding = new WinForms.Padding(4, 2, 4, 2)
+                    Padding = new WinForms.Padding(4, 2, 4, 2),
+                    TextAlign = Drawing.ContentAlignment.MiddleLeft,
+                    Margin = new WinForms.Padding(0)
                 };
                 double left = preset.Left;
                 double top = preset.Top;
@@ -273,19 +290,14 @@ public partial class App : Application
             _mainWindow.Show();
     }
 
-    private void OpenLedTest()
-    {
-        if (_mainWindow == null) return;
-        LedTestWindow testWindow = new LedTestWindow(_mainWindow.ViewModel);
-        testWindow.Show();
-    }
-
     private void OpenSettings()
     {
         if (_mainWindow == null) return;
         SettingsWindow settingsWindow = new SettingsWindow(_mainWindow.Settings,
             onSaved: newSettings => _mainWindow.ApplySettings(newSettings),
-            onPresetsChanged: () => RefreshTrayMenu());
+            onPresetsChanged: () => RefreshTrayMenu(),
+            onRestartRequested: RestartApp,
+            onLedModeTest: mode => _mainWindow.ViewModel.SetLedMode(mode));
         settingsWindow.Show();
     }
 
@@ -356,5 +368,4 @@ internal static partial class NativeMethods
     [System.Runtime.InteropServices.LibraryImport("user32.dll")]
     [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
     public static partial bool SetForegroundWindow(IntPtr hWnd);
-
 }

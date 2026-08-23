@@ -29,6 +29,8 @@ public partial class SettingsWindow : Window
     private readonly Settings _settings;
     private readonly Action<Settings>? _onSaved;
     private readonly Action? _onPresetsChanged;
+    private readonly Action? _onRestartRequested;
+    private readonly Action<LedMode>? _onLedModeTest;
     private Point _dragStartPoint;
     private bool _isDragging;
 
@@ -38,12 +40,17 @@ public partial class SettingsWindow : Window
     /// <param name="settings">当前配置实例</param>
     /// <param name="onSaved">保存成功后的回调</param>
     /// <param name="onPresetsChanged">预设变化后的回调（用于刷新托盘菜单）</param>
-    public SettingsWindow(Settings settings, Action<Settings>? onSaved = null, Action? onPresetsChanged = null)
+    /// <param name="onRestartRequested">HWiNFO 重启成功后重启当前程序的回调</param>
+    /// <param name="onLedModeTest">LED 测试模式回调</param>
+    public SettingsWindow(Settings settings, Action<Settings>? onSaved = null, Action? onPresetsChanged = null,
+        Action? onRestartRequested = null, Action<LedMode>? onLedModeTest = null)
     {
         InitializeComponent();
         _settings = settings;
         _onSaved = onSaved;
         _onPresetsChanged = onPresetsChanged;
+        _onRestartRequested = onRestartRequested;
+        _onLedModeTest = onLedModeTest;
         Icon = IconHelper.CreateIcon("⚙", 0x7D, 0xD4, 0xD4);
         TxtAppVersion.Text = $"当前版本：{GetCurrentVersionText()}";
         LoadValues();
@@ -291,6 +298,38 @@ public partial class SettingsWindow : Window
         SaveSettings();
     }
 
+    private void RestoreDefaults_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show(this,
+            "确定要恢复默认配置吗？当前配置将被覆盖。",
+            "恢复默认",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes)
+            return;
+
+        Settings defaults = new();
+        _settings.WindowLeft = defaults.WindowLeft;
+        _settings.WindowTop = defaults.WindowTop;
+        _settings.WindowTopMost = defaults.WindowTopMost;
+        _settings.CpuMaxTempC = defaults.CpuMaxTempC;
+        _settings.GpuMaxTempC = defaults.GpuMaxTempC;
+        _settings.PollIntervalMs = defaults.PollIntervalMs;
+        _settings.ColorThresholds = defaults.ColorThresholds;
+        _settings.PositionPresets = defaults.PositionPresets;
+        _settings.DefaultLedMode = defaults.DefaultLedMode;
+        _settings.LedIdleRestoreSeconds = defaults.LedIdleRestoreSeconds;
+        _settings.HwInfoScheduledRestartEnabled = defaults.HwInfoScheduledRestartEnabled;
+        _settings.HwInfoRestartIntervalHours = defaults.HwInfoRestartIntervalHours;
+
+        LoadValues();
+        ChkAutoStart.IsChecked = false;
+        LoadPresets();
+
+        if (SaveSettings())
+            ShowStatus("已恢复默认配置");
+    }
+
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         if (SaveSettings())
@@ -381,19 +420,41 @@ public partial class SettingsWindow : Window
 
     private void RestartHwInfo_Click(object sender, RoutedEventArgs e)
     {
+        Button? clickedButton = sender as Button;
         BtnRestartHwInfo.IsEnabled = false;
+        if (clickedButton != BtnRestartHwInfo)
+            clickedButton?.SetCurrentValue(IsEnabledProperty, false);
         try
         {
             using HwInfoRestartService service = new();
             if (service.RestartNow())
-                ShowStatus("HWiNFO 已重启");
+            {
+                ShowStatus("HWiNFO 已重启，正在重启程序...");
+                _onRestartRequested?.Invoke();
+            }
             else
                 ShowError("HWiNFO 重启失败，请确认 HWiNFO64 已安装或正在运行");
         }
         finally
         {
             BtnRestartHwInfo.IsEnabled = true;
+            if (clickedButton != BtnRestartHwInfo)
+                clickedButton?.SetCurrentValue(IsEnabledProperty, true);
         }
+    }
+
+    private void LedTestMode_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || !int.TryParse(button.Tag?.ToString(), out int mode) || mode < 0 || mode > 19)
+            return;
+
+        _onLedModeTest?.Invoke((LedMode)mode);
+        string[] modeNames =
+        [
+            "全灭", "同闪", "绿闪", "红闪", "黄闪", "绿亮", "红亮", "黄亮", "全亮",
+            "警车", "心跳", "SOS", "呼吸", "萤火虫", "心电", "跑马", "爆闪", "太极", "HELLO", "雷达"
+        ];
+        LedTestStatusText.Text = $"当前：{mode} {modeNames[mode]}";
     }
 
     private void TabControl_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -559,17 +620,5 @@ public partial class SettingsWindow : Window
 
         version = parsedVersion;
         return true;
-    }
-
-    /// <summary>
-    /// LED 模式下拉框选择变化时，确保选中项文字为白色
-    /// </summary>
-    private void CmbDefaultLedMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
-        {
-            // 强制设置选中项的 Foreground 为白色
-            selectedItem.Foreground = Brushes.White;
-        }
     }
 }

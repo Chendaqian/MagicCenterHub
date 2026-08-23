@@ -84,8 +84,7 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 src/MagicCenterHub/
 ├── App.xaml / App.xaml.cs              # 入口：单实例、托盘图标、开机自启
 ├── MainWindow.xaml / .cs               # 主窗口：1428x284 布局、LED 动画循环
-├── LedTestWindow.xaml / .cs            # LED 灯效测试窗口
-├── SettingsWindow.xaml / .cs           # 设置窗口
+├── SettingsWindow.xaml / .cs           # 设置、LED 测试和 HWiNFO 重启
 ├── Utils/
 │   ├── PercentToWidthConverter.cs      # 进度条百分比→宽度转换器
 │   └── IconHelper.cs                   # 图标生成工具
@@ -97,6 +96,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON 配置持久化
 │   ├── HwInfoProvider.cs               # HWiNFO 共享内存读取器
 │   ├── HardwareMonitorService.cs       # 1 秒定时采集
+│   ├── HwInfoRestartService.cs         # HWiNFO 定时/手动重启
 │   └── NamedPipeListenerService.cs     # 命名管道 hook 监听
 ├── Effects/
 │   ├── ILedEffect.cs                   # 灯效接口
@@ -119,8 +119,8 @@ src/MagicCenterHub/
 
 | 字段 | 说明 | 默认值 |
 |------|------|--------|
-| WindowLeft | 窗口 X 坐标（-1 = 自动定位） | -1 |
-| WindowTop | 窗口 Y 坐标（-1 = 自动定位） | -1 |
+| WindowLeft | 窗口 X 坐标 | -1499 |
+| WindowTop | 窗口 Y 坐标 | -769 |
 | WindowTopMost | 窗口置顶 | true |
 | PollIntervalMs | HWiNFO 采集间隔（毫秒） | 3000 |
 | CpuMaxTempC | CPU 温度上限 | 100 |
@@ -131,7 +131,11 @@ src/MagicCenterHub/
 | ColorThresholds.TempYellow | 温度黄色阈值 | 80 |
 | PositionPresets | 窗口位置预设列表 | [] |
 | DefaultLedMode | 默认 LED 灯效模式（0-19，启动时应用，空闲时恢复） | 17 |
-| LedIdleRestoreSeconds | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 | 0 |
+| LedIdleRestoreSeconds | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 | 600 |
+| HwInfoScheduledRestartEnabled | 是否启用 HWiNFO 定时重启 | true |
+| HwInfoRestartIntervalHours | HWiNFO 重启间隔（小时） | 11 |
+
+设置窗口包含“通用”“窗口位置”“硬件监控”“LED 灯效”“关于”五个区域。LED 灯效测试位于“LED 灯效”设置下方；HWiNFO 可在“硬件监控”中手动重启，也可以按设置的小时数自动重启。
 
 ## 前置要求
 

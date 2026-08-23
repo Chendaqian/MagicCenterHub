@@ -16,17 +16,18 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 
 | 字段 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| WindowLeft | double | -1 | 窗口 X 坐标（-1 表示自动） |
-| WindowTop | double | -1 | 窗口 Y 坐标（-1 表示自动） |
+| WindowLeft | double | -1499 | 窗口 X 坐标 |
+| WindowTop | double | -769 | 窗口 Y 坐标 |
 | WindowTopMost | bool | true | 窗口置顶 |
-| CpuFrequencyGHz | double | 0 | CPU 频率基准 |
 | CpuMaxTempC | double | 100 | CPU 温度上限（进度条满值） |
 | GpuMaxTempC | double | 95 | GPU 温度上限（进度条满值） |
 | PollIntervalMs | int | 3000 | HWiNFO 采集间隔（毫秒） |
 | ColorThresholds | object | 见下 | 三档颜色阈值 |
 | PositionPresets | list | [] | 窗口位置预设 |
 | DefaultLedMode | int | 17 | 默认 LED 灯效模式（启动时应用，空闲时恢复） |
-| LedIdleRestoreSeconds | int | 0 | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 |
+| LedIdleRestoreSeconds | int | 600 | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 |
+| HwInfoScheduledRestartEnabled | bool | true | 是否启用 HWiNFO 定时重启 |
+| HwInfoRestartIntervalHours | int | 11 | HWiNFO 重启间隔（小时） |
 
 ### ColorThresholds
 | 字段 | 默认值 | 说明 |
@@ -42,12 +43,10 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 src/MagicCenterHub/
 ├── App.xaml / App.xaml.cs              # 入口：单实例、托盘图标、开机自启
 ├── MainWindow.xaml / .cs               # 主窗口：1428x284 布局、LED 动画循环
-├── LedTestWindow.xaml / .cs            # LED 灯效测试窗口（托盘右键打开）
-├── SettingsWindow.xaml / .cs           # 设置界面（开机自启、窗口位置、阈值配置）
-├── PercentToWidthConverter.cs          # 进度条百分比→宽度转换器
-├── IconHelper.cs                       # 图标加载辅助（多尺寸 ICO 支持）
-├── Controls/
-│   └── MaterialIcons.cs                # Material Design 图标控件
+├── SettingsWindow.xaml / .cs           # 设置界面（配置、LED 灯效测试、HWiNFO 重启）
+├── Utils/
+│   ├── PercentToWidthConverter.cs      # 进度条百分比→宽度转换器
+│   └── IconHelper.cs                   # 图标加载辅助（多尺寸 ICO 支持）
 ├── Models/
 │   ├── Settings.cs                     # 配置模型（窗口位置、阈值、硬件参数）
 │   ├── HardwareData.cs                 # 硬件数据模型（带 Valid 标记）
@@ -56,6 +55,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON 配置持久化（%AppData%）
 │   ├── HwInfoProvider.cs               # HWiNFO v2 共享内存读取器
 │   ├── HardwareMonitorService.cs       # 1 秒定时采集 + 重试检测
+│   ├── HwInfoRestartService.cs         # HWiNFO 定时/手动重启
 │   └── NamedPipeListenerService.cs     # 命名管道 hook 监听
 ├── Effects/
 │   ├── ILedEffect.cs                   # 灯效接口（LedColor 结构体）
