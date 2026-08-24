@@ -1,6 +1,6 @@
 using MagicCenterHub.Models;
-using Newtonsoft.Json;
 using System.IO;
+using System.Text.Json;
 
 namespace MagicCenterHub.Services;
 
@@ -13,6 +13,7 @@ public static class SettingsService
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MagicCenterHub");
 
     private static readonly string SettingsPath = Path.Combine(SettingsDir, "settings.json");
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
     /// <summary>
     /// 加载配置，文件不存在或解析失败时返回默认值
@@ -25,7 +26,7 @@ public static class SettingsService
         try
         {
             string json = File.ReadAllText(SettingsPath);
-            return JsonConvert.DeserializeObject<Settings>(json) ?? new Settings();
+            return JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
         }
         catch
         {
@@ -43,7 +44,7 @@ public static class SettingsService
             if (!Directory.Exists(SettingsDir))
                 Directory.CreateDirectory(SettingsDir);
 
-            string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            string json = JsonSerializer.Serialize(settings, JsonOptions);
             File.WriteAllText(SettingsPath, json);
         }
         catch // 静默失败，不影响主流程

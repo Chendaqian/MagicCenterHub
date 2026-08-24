@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Shell;
 using Drawing = System.Drawing;
 using WinForms = System.Windows.Forms;
 
@@ -64,6 +65,12 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
+
+        JumpList.SetJumpList(this, new JumpList
+        {
+            ShowRecentCategory = false,
+            ShowFrequentCategory = false
+        });
 
         Settings settings = SettingsService.Load();
         _mainWindow = new MainWindow(settings);

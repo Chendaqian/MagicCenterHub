@@ -1,8 +1,8 @@
-using Newtonsoft.Json.Linq;
 using System.IO;
 using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Text.Json;
 
 namespace MagicCenterHub.Services;
 
@@ -91,11 +91,16 @@ public class NamedPipeListenerService : IDisposable
     {
         try
         {
-            JObject obj = JObject.Parse(json);
+            using JsonDocument document = JsonDocument.Parse(json);
+            JsonElement root = document.RootElement;
+            int ledMode = root.TryGetProperty("ledMode", out JsonElement modeElement) &&
+                          modeElement.TryGetInt32(out int parsedLedMode)
+                ? parsedLedMode
+                : 0;
 
             HookMessage msg = new HookMessage
             {
-                LedMode = obj["ledMode"]?.ToObject<int>() ?? 0
+                LedMode = ledMode
             };
 
             HookMessageReceived?.Invoke(msg);

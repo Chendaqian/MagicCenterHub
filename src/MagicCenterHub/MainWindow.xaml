@@ -5,6 +5,7 @@
         xmlns:utils="clr-namespace:MagicCenterHub.Utils"
         Title="MagicCenterHub" Width="1428" Height="284"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" Focusable="True"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
         Topmost="True" ShowInTaskbar="False"
         Loaded="Window_Loaded" Closing="Window_Closing" MouseLeftButtonDown="Window_MouseLeftButtonDown"
         MouseRightButtonDown="Window_MouseRightButtonDown" PreviewKeyDown="Window_PreviewKeyDown">
@@ -59,9 +60,12 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            UseLayoutRounding="True" SnapsToDevicePixels="True"
+                            RenderOptions.EdgeMode="Aliased">
                     <!-- 绿灯 -->
-                    <Grid Width="60" Height="60" Margin="0,0,0,20">
+                    <Grid Width="60" Height="60" Margin="0,0,0,20"
+                          UseLayoutRounding="True" SnapsToDevicePixels="True">
                         <Ellipse Fill="#116611" />
                         <Ellipse Width="48" Height="48">
                             <Ellipse.Fill>
@@ -71,7 +75,8 @@
                         <Ellipse Width="24" Height="24" Fill="#A0F0A0" Opacity="0.7" />
                     </Grid>
                     <!-- 黄灯 -->
-                    <Grid Width="60" Height="60" Margin="0,0,0,20">
+                    <Grid Width="60" Height="60" Margin="0,0,0,20"
+                          UseLayoutRounding="True" SnapsToDevicePixels="True">
                         <Ellipse Fill="#A06000" />
                         <Ellipse Width="48" Height="48">
                             <Ellipse.Fill>
@@ -81,7 +86,8 @@
                         <Ellipse Width="24" Height="24" Fill="#FFD890" Opacity="0.7" />
                     </Grid>
                     <!-- 红灯 -->
-                    <Grid Width="60" Height="60">
+                    <Grid Width="60" Height="60"
+                          UseLayoutRounding="True" SnapsToDevicePixels="True">
                         <Ellipse Fill="#C02020" />
                         <Ellipse Width="48" Height="48">
                             <Ellipse.Fill>

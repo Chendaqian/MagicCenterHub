@@ -12,6 +12,11 @@ namespace MagicCenterHub.ViewModels;
 /// </summary>
 public class MainViewModel : INotifyPropertyChanged, IDisposable
 {
+    private static readonly Brush HealthyBrush = CreateFrozenBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+    private static readonly Brush WarningBrush = CreateFrozenBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+    private static readonly Brush CriticalBrush = CreateFrozenBrush(Color.FromRgb(0xE0, 0x40, 0x50));
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, PropertyChangedEventArgs> PropertyChangedArgs = new();
+
     private readonly Settings _settings;
     private HardwareData _hwData = new();
     private LedMode _currentLedMode = LedMode.BothOff;
@@ -33,10 +38,10 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     private string _cpuTempText = "N/A";
     private double _cpuUsagePercent;
     private double _cpuTempPercent;
-    private Brush _cpuUsageColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _cpuTempColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _cpuUsageBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _cpuTempBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+    private Brush _cpuUsageColor = HealthyBrush;
+    private Brush _cpuTempColor = HealthyBrush;
+    private Brush _cpuUsageBarColor = HealthyBrush;
+    private Brush _cpuTempBarColor = HealthyBrush;
 
     // GPU
     private string _gpuUsageText = "N/A";
@@ -45,10 +50,10 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     private string _gpuTempText = "N/A";
     private double _gpuUsagePercent;
     private double _gpuTempPercent;
-    private Brush _gpuUsageColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _gpuTempColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _gpuUsageBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _gpuTempBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+    private Brush _gpuUsageColor = HealthyBrush;
+    private Brush _gpuTempColor = HealthyBrush;
+    private Brush _gpuUsageBarColor = HealthyBrush;
+    private Brush _gpuTempBarColor = HealthyBrush;
 
     // 主机
     private string _memoryText = "N/A";
@@ -56,10 +61,10 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     private string _batteryText = "N/A";
     private double _memoryPercent;
     private double _batteryPercent;
-    private Brush _memoryColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _batteryColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _memoryBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-    private Brush _batteryBarColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+    private Brush _memoryColor = HealthyBrush;
+    private Brush _batteryColor = HealthyBrush;
+    private Brush _memoryBarColor = HealthyBrush;
+    private Brush _batteryBarColor = HealthyBrush;
 
     // 磁盘
     private string _diskReadText = "N/A";
@@ -74,7 +79,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     // HWiNFO 连接状态
     private string _hwInfoStatusText = "HWiNFO64...";
 
-    private Brush _hwInfoStatusColor = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+    private Brush _hwInfoStatusColor = WarningBrush;
 
     /// <summary>
     /// 属性变化事件
@@ -239,12 +244,12 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
         if (connected)
         {
             HwInfoStatusText = "HWiNFO64";
-            HwInfoStatusColor = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+            HwInfoStatusColor = HealthyBrush;
         }
         else
         {
             HwInfoStatusText = "HWiNFO64";
-            HwInfoStatusColor = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+            HwInfoStatusColor = WarningBrush;
         }
     }
 
@@ -321,16 +326,31 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
         return $"{bps / (1024 * 1024):F1} MB/s";
     }
 
-    private static SolidColorBrush GetBrushForValue(double value, double greenThreshold, double yellowThreshold)
+    private static Brush GetBrushForValue(double value, double greenThreshold, double yellowThreshold)
     {
         if (value < greenThreshold)
-            return new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F)); // 绿
+            return HealthyBrush;
         if (value < yellowThreshold)
-            return new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40)); // 琥珀
-        return new SolidColorBrush(Color.FromRgb(0xE0, 0x40, 0x50)); // 红
+            return WarningBrush;
+        return CriticalBrush;
     }
 
-    private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private static SolidColorBrush CreateFrozenBrush(Color color)
+    {
+        SolidColorBrush brush = new SolidColorBrush(color);
+        brush.Freeze();
+        return brush;
+    }
+
+    private void SetProperty<T>(ref T field, T value, string name)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value))
+            return;
+
+        field = value;
+        PropertyChanged?.Invoke(this, PropertyChangedArgs.GetOrAdd(
+            name, static propertyName => new PropertyChangedEventArgs(propertyName)));
+    }
 
     /// <summary>
     /// 绿灯当前颜色
@@ -338,7 +358,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Color LedGreen
     {
         get => _ledGreen;
-        set { _ledGreen = value; OnPropertyChanged(nameof(LedGreen)); }
+        set => SetProperty(ref _ledGreen, value, nameof(LedGreen));
     }
 
     /// <summary>
@@ -347,7 +367,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Color LedRed
     {
         get => _ledRed;
-        set { _ledRed = value; OnPropertyChanged(nameof(LedRed)); }
+        set => SetProperty(ref _ledRed, value, nameof(LedRed));
     }
 
     /// <summary>
@@ -356,7 +376,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Color LedYellow
     {
         get => _ledYellow;
-        set { _ledYellow = value; OnPropertyChanged(nameof(LedYellow)); }
+        set => SetProperty(ref _ledYellow, value, nameof(LedYellow));
     }
 
     /// <summary>
@@ -365,7 +385,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string CpuUsageText
     {
         get => _cpuUsageText;
-        set { _cpuUsageText = value; OnPropertyChanged(nameof(CpuUsageText)); }
+        set => SetProperty(ref _cpuUsageText, value, nameof(CpuUsageText));
     }
 
     /// <summary>
@@ -374,7 +394,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string CpuFreqText
     {
         get => _cpuFreqText;
-        set { _cpuFreqText = value; OnPropertyChanged(nameof(CpuFreqText)); }
+        set => SetProperty(ref _cpuFreqText, value, nameof(CpuFreqText));
     }
 
     /// <summary>
@@ -383,7 +403,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string CpuTempText
     {
         get => _cpuTempText;
-        set { _cpuTempText = value; OnPropertyChanged(nameof(CpuTempText)); }
+        set => SetProperty(ref _cpuTempText, value, nameof(CpuTempText));
     }
 
     /// <summary>
@@ -392,7 +412,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double CpuUsagePercent
     {
         get => _cpuUsagePercent;
-        set { _cpuUsagePercent = value; OnPropertyChanged(nameof(CpuUsagePercent)); }
+        set => SetProperty(ref _cpuUsagePercent, value, nameof(CpuUsagePercent));
     }
 
     /// <summary>
@@ -401,7 +421,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double CpuTempPercent
     {
         get => _cpuTempPercent;
-        set { _cpuTempPercent = value; OnPropertyChanged(nameof(CpuTempPercent)); }
+        set => SetProperty(ref _cpuTempPercent, value, nameof(CpuTempPercent));
     }
 
     /// <summary>
@@ -410,7 +430,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush CpuUsageColor
     {
         get => _cpuUsageColor;
-        set { _cpuUsageColor = value; OnPropertyChanged(nameof(CpuUsageColor)); }
+        set => SetProperty(ref _cpuUsageColor, value, nameof(CpuUsageColor));
     }
 
     /// <summary>
@@ -419,7 +439,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush CpuTempColor
     {
         get => _cpuTempColor;
-        set { _cpuTempColor = value; OnPropertyChanged(nameof(CpuTempColor)); }
+        set => SetProperty(ref _cpuTempColor, value, nameof(CpuTempColor));
     }
 
     /// <summary>
@@ -428,7 +448,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush CpuUsageBarColor
     {
         get => _cpuUsageBarColor;
-        set { _cpuUsageBarColor = value; OnPropertyChanged(nameof(CpuUsageBarColor)); }
+        set => SetProperty(ref _cpuUsageBarColor, value, nameof(CpuUsageBarColor));
     }
 
     /// <summary>
@@ -437,7 +457,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush CpuTempBarColor
     {
         get => _cpuTempBarColor;
-        set { _cpuTempBarColor = value; OnPropertyChanged(nameof(CpuTempBarColor)); }
+        set => SetProperty(ref _cpuTempBarColor, value, nameof(CpuTempBarColor));
     }
 
     /// <summary>
@@ -446,7 +466,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string GpuUsageText
     {
         get => _gpuUsageText;
-        set { _gpuUsageText = value; OnPropertyChanged(nameof(GpuUsageText)); }
+        set => SetProperty(ref _gpuUsageText, value, nameof(GpuUsageText));
     }
 
     /// <summary>
@@ -455,7 +475,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string GpuFreqText
     {
         get => _gpuFreqText;
-        set { _gpuFreqText = value; OnPropertyChanged(nameof(GpuFreqText)); }
+        set => SetProperty(ref _gpuFreqText, value, nameof(GpuFreqText));
     }
 
     /// <summary>
@@ -464,7 +484,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string GpuTempText
     {
         get => _gpuTempText;
-        set { _gpuTempText = value; OnPropertyChanged(nameof(GpuTempText)); }
+        set => SetProperty(ref _gpuTempText, value, nameof(GpuTempText));
     }
 
     /// <summary>
@@ -473,7 +493,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double GpuUsagePercent
     {
         get => _gpuUsagePercent;
-        set { _gpuUsagePercent = value; OnPropertyChanged(nameof(GpuUsagePercent)); }
+        set => SetProperty(ref _gpuUsagePercent, value, nameof(GpuUsagePercent));
     }
 
     /// <summary>
@@ -482,7 +502,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double GpuTempPercent
     {
         get => _gpuTempPercent;
-        set { _gpuTempPercent = value; OnPropertyChanged(nameof(GpuTempPercent)); }
+        set => SetProperty(ref _gpuTempPercent, value, nameof(GpuTempPercent));
     }
 
     /// <summary>
@@ -491,7 +511,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush GpuUsageColor
     {
         get => _gpuUsageColor;
-        set { _gpuUsageColor = value; OnPropertyChanged(nameof(GpuUsageColor)); }
+        set => SetProperty(ref _gpuUsageColor, value, nameof(GpuUsageColor));
     }
 
     /// <summary>
@@ -500,7 +520,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush GpuTempColor
     {
         get => _gpuTempColor;
-        set { _gpuTempColor = value; OnPropertyChanged(nameof(GpuTempColor)); }
+        set => SetProperty(ref _gpuTempColor, value, nameof(GpuTempColor));
     }
 
     /// <summary>
@@ -509,7 +529,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush GpuUsageBarColor
     {
         get => _gpuUsageBarColor;
-        set { _gpuUsageBarColor = value; OnPropertyChanged(nameof(GpuUsageBarColor)); }
+        set => SetProperty(ref _gpuUsageBarColor, value, nameof(GpuUsageBarColor));
     }
 
     /// <summary>
@@ -518,7 +538,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush GpuTempBarColor
     {
         get => _gpuTempBarColor;
-        set { _gpuTempBarColor = value; OnPropertyChanged(nameof(GpuTempBarColor)); }
+        set => SetProperty(ref _gpuTempBarColor, value, nameof(GpuTempBarColor));
     }
 
     /// <summary>
@@ -527,7 +547,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string MemoryText
     {
         get => _memoryText;
-        set { _memoryText = value; OnPropertyChanged(nameof(MemoryText)); }
+        set => SetProperty(ref _memoryText, value, nameof(MemoryText));
     }
 
     /// <summary>
@@ -536,7 +556,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string BatteryText
     {
         get => _batteryText;
-        set { _batteryText = value; OnPropertyChanged(nameof(BatteryText)); }
+        set => SetProperty(ref _batteryText, value, nameof(BatteryText));
     }
 
     /// <summary>
@@ -545,7 +565,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double MemoryPercent
     {
         get => _memoryPercent;
-        set { _memoryPercent = value; OnPropertyChanged(nameof(MemoryPercent)); }
+        set => SetProperty(ref _memoryPercent, value, nameof(MemoryPercent));
     }
 
     /// <summary>
@@ -554,7 +574,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public double BatteryPercent
     {
         get => _batteryPercent;
-        set { _batteryPercent = value; OnPropertyChanged(nameof(BatteryPercent)); }
+        set => SetProperty(ref _batteryPercent, value, nameof(BatteryPercent));
     }
 
     /// <summary>
@@ -563,7 +583,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush MemoryColor
     {
         get => _memoryColor;
-        set { _memoryColor = value; OnPropertyChanged(nameof(MemoryColor)); }
+        set => SetProperty(ref _memoryColor, value, nameof(MemoryColor));
     }
 
     /// <summary>
@@ -572,7 +592,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush BatteryColor
     {
         get => _batteryColor;
-        set { _batteryColor = value; OnPropertyChanged(nameof(BatteryColor)); }
+        set => SetProperty(ref _batteryColor, value, nameof(BatteryColor));
     }
 
     /// <summary>
@@ -581,7 +601,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush MemoryBarColor
     {
         get => _memoryBarColor;
-        set { _memoryBarColor = value; OnPropertyChanged(nameof(MemoryBarColor)); }
+        set => SetProperty(ref _memoryBarColor, value, nameof(MemoryBarColor));
     }
 
     /// <summary>
@@ -590,7 +610,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush BatteryBarColor
     {
         get => _batteryBarColor;
-        set { _batteryBarColor = value; OnPropertyChanged(nameof(BatteryBarColor)); }
+        set => SetProperty(ref _batteryBarColor, value, nameof(BatteryBarColor));
     }
 
     /// <summary>
@@ -599,7 +619,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string DiskReadText
     {
         get => _diskReadText;
-        set { _diskReadText = value; OnPropertyChanged(nameof(DiskReadText)); }
+        set => SetProperty(ref _diskReadText, value, nameof(DiskReadText));
     }
 
     /// <summary>
@@ -608,7 +628,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string DiskWriteText
     {
         get => _diskWriteText;
-        set { _diskWriteText = value; OnPropertyChanged(nameof(DiskWriteText)); }
+        set => SetProperty(ref _diskWriteText, value, nameof(DiskWriteText));
     }
 
     /// <summary>
@@ -617,7 +637,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string NetUpText
     {
         get => _netUpText;
-        set { _netUpText = value; OnPropertyChanged(nameof(NetUpText)); }
+        set => SetProperty(ref _netUpText, value, nameof(NetUpText));
     }
 
     /// <summary>
@@ -626,7 +646,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string NetDownText
     {
         get => _netDownText;
-        set { _netDownText = value; OnPropertyChanged(nameof(NetDownText)); }
+        set => SetProperty(ref _netDownText, value, nameof(NetDownText));
     }
 
     /// <summary>
@@ -635,7 +655,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public string HwInfoStatusText
     {
         get => _hwInfoStatusText;
-        set { _hwInfoStatusText = value; OnPropertyChanged(nameof(HwInfoStatusText)); }
+        set => SetProperty(ref _hwInfoStatusText, value, nameof(HwInfoStatusText));
     }
 
     /// <summary>
@@ -644,7 +664,7 @@ public class MainViewModel : INotifyPropertyChanged, IDisposable
     public Brush HwInfoStatusColor
     {
         get => _hwInfoStatusColor;
-        set { _hwInfoStatusColor = value; OnPropertyChanged(nameof(HwInfoStatusColor)); }
+        set => SetProperty(ref _hwInfoStatusColor, value, nameof(HwInfoStatusColor));
     }
 
     /// <summary>
