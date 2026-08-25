@@ -64,6 +64,11 @@ public class Settings
     /// HWiNFO 定时重启间隔（小时）
     /// </summary>
     public int HwInfoRestartIntervalHours { get; set; } = 11;
+
+    /// <summary>
+    /// HWiNFO 可执行文件路径，留空时自动识别
+    /// </summary>
+    public string HwInfoExecutablePath { get; set; } = string.Empty;
 }
 
 /// <summary>

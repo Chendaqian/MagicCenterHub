@@ -103,6 +103,9 @@ public partial class SettingsWindow : Window
 
         // 采集间隔
         TxtPollInterval.Text = _settings.PollIntervalMs.ToString();
+        TxtHwInfoPath.Text = string.IsNullOrWhiteSpace(_settings.HwInfoExecutablePath)
+            ? HwInfoRestartService.FindExecutablePath() ?? string.Empty
+            : _settings.HwInfoExecutablePath;
         ChkHwInfoScheduledRestart.IsChecked = _settings.HwInfoScheduledRestartEnabled;
         int restartInterval = _settings.HwInfoRestartIntervalHours;
         CmbHwInfoRestartInterval.SelectedIndex = CmbHwInfoRestartInterval.Items.Cast<ComboBoxItem>()
@@ -321,6 +324,7 @@ public partial class SettingsWindow : Window
         _settings.LedIdleRestoreSeconds = defaults.LedIdleRestoreSeconds;
         _settings.HwInfoScheduledRestartEnabled = defaults.HwInfoScheduledRestartEnabled;
         _settings.HwInfoRestartIntervalHours = defaults.HwInfoRestartIntervalHours;
+        _settings.HwInfoExecutablePath = defaults.HwInfoExecutablePath;
 
         LoadValues();
         ChkAutoStart.IsChecked = false;
@@ -366,6 +370,7 @@ public partial class SettingsWindow : Window
         // 采集间隔
         if (int.TryParse(TxtPollInterval.Text, out int pollMs) && pollMs >= 500)
             _settings.PollIntervalMs = pollMs;
+        _settings.HwInfoExecutablePath = TxtHwInfoPath.Text.Trim();
         _settings.HwInfoScheduledRestartEnabled = ChkHwInfoScheduledRestart.IsChecked == true;
         if (CmbHwInfoRestartInterval.SelectedItem is ComboBoxItem selectedInterval &&
             int.TryParse(selectedInterval.Tag?.ToString(), out int restartInterval))
@@ -426,14 +431,16 @@ public partial class SettingsWindow : Window
             clickedButton?.SetCurrentValue(IsEnabledProperty, false);
         try
         {
+            _settings.HwInfoExecutablePath = TxtHwInfoPath.Text.Trim();
+            SettingsService.Save(_settings);
             using HwInfoRestartService service = new();
-            if (service.RestartNow())
+            if (service.RestartNow(_settings.HwInfoExecutablePath))
             {
                 ShowStatus("HWiNFO 已重启，正在重启程序...");
                 _onRestartRequested?.Invoke();
             }
             else
-                ShowError("HWiNFO 重启失败，请确认 HWiNFO64 已安装或正在运行");
+                ShowError("HWiNFO 启动失败，请检查程序路径");
         }
         finally
         {
@@ -441,6 +448,14 @@ public partial class SettingsWindow : Window
             if (clickedButton != BtnRestartHwInfo)
                 clickedButton?.SetCurrentValue(IsEnabledProperty, true);
         }
+    }
+
+    private void DetectHwInfoPath_Click(object sender, RoutedEventArgs e)
+    {
+        TxtHwInfoPath.Text = HwInfoRestartService.FindExecutablePath() ?? string.Empty;
+        ShowStatus(string.IsNullOrWhiteSpace(TxtHwInfoPath.Text)
+            ? "未识别到 HWiNFO，可手动填写路径"
+            : "已自动识别 HWiNFO 路径");
     }
 
     private void LedTestMode_Click(object sender, RoutedEventArgs e)

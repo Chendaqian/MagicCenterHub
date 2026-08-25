@@ -39,7 +39,12 @@ public sealed class HwInfoRestartService : IDisposable
 
     public bool RestartNow()
     {
-        return RestartHwInfo();
+        return RestartHwInfo(_settings?.HwInfoExecutablePath);
+    }
+
+    public bool RestartNow(string? executablePath)
+    {
+        return RestartHwInfo(executablePath);
     }
 
     private void OnTimerTick(object? sender, EventArgs e)
@@ -57,7 +62,7 @@ public sealed class HwInfoRestartService : IDisposable
             return;
 
         _nextScheduledRestartAt = now.AddHours(_settings.HwInfoRestartIntervalHours);
-        RestartHwInfo();
+        RestartHwInfo(_settings.HwInfoExecutablePath);
     }
 
     private void ResetSchedule()
@@ -68,7 +73,7 @@ public sealed class HwInfoRestartService : IDisposable
             : null;
     }
 
-    private static bool RestartHwInfo()
+    private static bool RestartHwInfo(string? configuredPath)
     {
         List<Process> processes = [];
         string? executablePath = null;
@@ -84,7 +89,11 @@ public sealed class HwInfoRestartService : IDisposable
                 }
             }
 
-            executablePath ??= FindHWiNFOExecutable();
+            executablePath ??= ResolveExecutablePath(configuredPath);
+
+            // 没有可执行文件时视为无需处理，交由调用方继续重启当前程序。
+            if (string.IsNullOrWhiteSpace(executablePath) || !File.Exists(executablePath))
+                return true;
 
             foreach (Process process in processes)
             {
@@ -111,9 +120,6 @@ public sealed class HwInfoRestartService : IDisposable
                     return false;
                 }
             }
-
-            if (string.IsNullOrWhiteSpace(executablePath) || !File.Exists(executablePath))
-                return false;
 
             using Process? restartedProcess = Process.Start(new ProcessStartInfo
             {
@@ -166,6 +172,32 @@ public sealed class HwInfoRestartService : IDisposable
         }
 
         return null;
+    }
+
+    public static string? FindExecutablePath()
+    {
+        foreach (string processName in ProcessNames)
+        {
+            foreach (Process process in Process.GetProcessesByName(processName))
+            {
+                using (process)
+                {
+                    string? executablePath = TryGetExecutablePath(process);
+                    if (!string.IsNullOrWhiteSpace(executablePath) && File.Exists(executablePath))
+                        return executablePath;
+                }
+            }
+        }
+
+        return FindHWiNFOExecutable();
+    }
+
+    private static string? ResolveExecutablePath(string? configuredPath)
+    {
+        if (!string.IsNullOrWhiteSpace(configuredPath) && File.Exists(configuredPath.Trim()))
+            return Path.GetFullPath(configuredPath.Trim());
+
+        return FindHWiNFOExecutable();
     }
 
     public void Dispose()

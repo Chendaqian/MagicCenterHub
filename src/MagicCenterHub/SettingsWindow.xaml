@@ -336,6 +336,15 @@
                                 <ComboBoxItem Content="12 小时" Tag="12" />
                             </ComboBox>
                         </Grid>
+                        <TextBlock Text="HWiNFO 程序路径" Style="{StaticResource LabelStyle}" Margin="0,4,0,4" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <TextBox x:Name="TxtHwInfoPath" Style="{StaticResource InputStyle}" Width="430"
+                                     HorizontalAlignment="Stretch" Grid.Column="0" />
+                            <Button Content="自动识别" Grid.Column="1" Margin="8,0,0,0"
+                                    FontFamily="Segoe UI" FontSize="12" Background="#3C3C42" Foreground="#D3D0D0"
+                                    BorderBrush="#555" Padding="8,5" Cursor="Hand" Click="DetectHwInfoPath_Click" />
+                        </Grid>
                         <Button x:Name="BtnRestartHwInfo" Content="重启 HWiNFO 和当前程序" Width="180" HorizontalAlignment="Left"
                                 FontFamily="Segoe UI" FontSize="12" Background="#3C3C42" Foreground="#D3D0D0"
                                 BorderBrush="#555" Padding="8,5" Cursor="Hand" Click="RestartHwInfo_Click" />

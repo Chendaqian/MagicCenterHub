@@ -144,6 +144,17 @@ public partial class App : Application
             };
         }
 
+        WinForms.ToolStripMenuItem autoPositionItem = new WinForms.ToolStripMenuItem("  ✨  自动定位")
+        {
+            ForeColor = Drawing.Color.FromArgb(220, 220, 220),
+            Font = new Drawing.Font("Segoe UI", 10),
+            Padding = new WinForms.Padding(4, 2, 4, 2),
+            TextAlign = Drawing.ContentAlignment.MiddleLeft,
+            Margin = new WinForms.Padding(0)
+        };
+        autoPositionItem.Click += (s, e) => _mainWindow?.MoveToAutoPosition();
+        posMenu.DropDownItems.Add(autoPositionItem);
+
         WinForms.ToolStripMenuItem resetItem = new WinForms.ToolStripMenuItem("  🖥  Default")
         {
             ForeColor = Drawing.Color.FromArgb(220, 220, 220),

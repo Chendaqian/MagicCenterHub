@@ -180,15 +180,8 @@ public partial class MainWindow : Window
     private void RestoreWindowPosition()
     {
         // 每次启动都按 HUD 当前的屏幕布局定位，避免显示器排列变化后沿用旧绝对坐标。
-        WinForms.Screen? hudScreen = DisplayLocator.FindScreen(TargetDisplayName);
-        if (hudScreen != null)
+        if (TrySetHudPosition())
         {
-            Drawing.Rectangle bounds = hudScreen.Bounds;
-            // 窗口此时仍使用启动屏幕的 DPI；先反算 DIP，避免跨屏时坐标被再次缩放。
-            Matrix transform = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice
-                ?? Matrix.Identity;
-            Left = (bounds.Left + HudPositionOffsetX) / transform.M11;
-            Top = (bounds.Top + HudPositionOffsetY) / transform.M22;
             return;
         }
 
@@ -202,17 +195,35 @@ public partial class MainWindow : Window
         }
 
         // 首次启动：找最接近窗口尺寸的小屏幕
-        WinForms.Screen? bestScreen = FindBestScreen();
-        if (bestScreen != null)
-        {
-            System.Drawing.Rectangle area = bestScreen.WorkingArea;
-            Left = area.Left;
-            Top = area.Top;
-        }
-        else
-        {
+        if (!TrySetBestScreenPosition())
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        }
+    }
+
+    private bool TrySetHudPosition()
+    {
+        WinForms.Screen? hudScreen = DisplayLocator.FindScreen(TargetDisplayName);
+        if (hudScreen == null)
+            return false;
+
+        Drawing.Rectangle bounds = hudScreen.Bounds;
+        // 窗口此时仍使用启动屏幕的 DPI；先反算 DIP，避免跨屏时坐标被再次缩放。
+        Matrix transform = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice
+            ?? Matrix.Identity;
+        Left = (bounds.Left + HudPositionOffsetX) / transform.M11;
+        Top = (bounds.Top + HudPositionOffsetY) / transform.M22;
+        return true;
+    }
+
+    private bool TrySetBestScreenPosition()
+    {
+        WinForms.Screen? bestScreen = FindBestScreen();
+        if (bestScreen == null)
+            return false;
+
+        System.Drawing.Rectangle area = bestScreen.WorkingArea;
+        Left = area.Left;
+        Top = area.Top;
+        return true;
     }
 
     private System.Windows.Forms.Screen? FindBestScreen()
@@ -230,6 +241,16 @@ public partial class MainWindow : Window
             }
         }
         return bestScreen;
+    }
+
+    /// <summary>
+    /// 按启动时的自动定位规则，将窗口移动到 HUD 或最接近窗口尺寸的小屏幕。
+    /// </summary>
+    public void MoveToAutoPosition()
+    {
+        RestoreNormalWindowState();
+        if (TrySetHudPosition() || TrySetBestScreenPosition())
+            SaveWindowPosition();
     }
 
     private void SaveWindowPosition()
