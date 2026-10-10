@@ -515,7 +515,7 @@
 
                         <TextBlock Text="技术栈" Style="{StaticResource SectionHeader}" />
                         <TextBlock FontFamily="Segoe UI" FontSize="13" Foreground="#D3D0D0" TextWrapping="Wrap">
-                            <Run Text="语言：C# / .NET 8 (net8.0-windows)&#xA;" />
+                            <Run Text=" 语言：C# / .NET 8 (net8.0-windows)&#xA;" />
                             <Run Text="界面：WPF&#xA;" />
                             <Run Text="硬件数据：HWiNFO64 Shared Memory&#xA;" />
                             <Run Text="序列化：System.Text.Json&#xA;" />
@@ -524,7 +524,7 @@
 
                         <TextBlock Text="开源组件与许可" Style="{StaticResource SectionHeader}" />
                         <TextBlock FontFamily="Segoe UI" FontSize="13" Foreground="#D3D0D0" TextWrapping="Wrap">
-                            <Run Text="System.Text.Json（.NET 8 内置）&#xA;" />
+                            <Run Text=" System.Text.Json（.NET 8 内置）&#xA;" />
                             <Run Text="System.Text.Encoding.CodePages 8.0.0（MIT）&#xA;" />
                             <Run Text="HWiNFO64 Shared Memory（由 HWiNFO64 提供）&#xA;" />
                             <Run Text="项目自身代码采用 MIT License" />
