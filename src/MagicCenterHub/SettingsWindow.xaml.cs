@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace MagicCenterHub;
 
@@ -33,6 +34,7 @@ public partial class SettingsWindow : Window
     private readonly Action<LedMode>? _onLedModeTest;
     private Point _dragStartPoint;
     private bool _isDragging;
+    private readonly DispatcherTimer _uptimeTimer;
 
     /// <summary>
     /// 初始化设置窗口
@@ -55,6 +57,13 @@ public partial class SettingsWindow : Window
         TxtAppVersion.Text = $"当前版本：{GetCurrentVersionText()}";
         LoadValues();
         LoadPresets();
+
+        // HWiNFO 运行状态刷新，窗口关闭时停止
+        _uptimeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+        _uptimeTimer.Tick += (_, _) => RefreshHwInfoUptime();
+        _uptimeTimer.Start();
+        Closed += (_, _) => _uptimeTimer.Stop();
+        RefreshHwInfoUptime();
     }
 
     private static HttpClient CreateUpdateHttpClient()
@@ -421,6 +430,58 @@ public partial class SettingsWindow : Window
     {
         StatusText.Text = message;
         StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xF0, 0x60, 0x80));
+    }
+
+    /// <summary>
+    /// 刷新 HWiNFO 运行状态显示（已运行时长 + 预计自动重启时间）
+    /// </summary>
+    private void RefreshHwInfoUptime()
+    {
+        DateTime? startTime = HwInfoRestartService.GetHwInfoStartTime();
+        if (startTime == null)
+        {
+            TxtHwInfoUptime.Text = "HWiNFO 未运行";
+            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
+            return;
+        }
+
+        // 显示界面上的当前勾选/间隔值，未保存也能即时预览
+        bool enabled = ChkHwInfoScheduledRestart.IsChecked == true;
+        int intervalHours = CmbHwInfoRestartInterval.SelectedItem is ComboBoxItem selectedInterval &&
+            int.TryParse(selectedInterval.Tag?.ToString(), out int hours)
+            ? hours
+            : _settings.HwInfoRestartIntervalHours;
+
+        string uptimeText = FormatUptime(DateTime.Now - startTime.Value);
+        if (!enabled || intervalHours <= 0)
+        {
+            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，定时重启未启用";
+            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
+            return;
+        }
+
+        DateTime nextRestartAt = startTime.Value.AddHours(intervalHours);
+        if (nextRestartAt > DateTime.Now)
+        {
+            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，预计 {nextRestartAt:HH:mm} 自动重启";
+            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
+        }
+        else
+        {
+            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，已达重启间隔，即将自动重启";
+            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
+        }
+    }
+
+    /// <summary>
+    /// 格式化运行时长显示文本
+    /// </summary>
+    private static string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1)
+            return $"{(int)uptime.TotalDays} 天 {uptime.Hours} 小时 {uptime.Minutes} 分";
+
+        return $"{uptime.Hours} 小时 {uptime.Minutes} 分";
     }
 
     private void RestartHwInfo_Click(object sender, RoutedEventArgs e)

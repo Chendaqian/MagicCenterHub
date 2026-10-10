@@ -350,6 +350,8 @@
                                 BorderBrush="#555" Padding="8,5" Cursor="Hand" Click="RestartHwInfo_Click" />
                         <TextBlock Text="修改间隔后点击应用或保存生效，默认 11 小时" FontFamily="Segoe UI" FontSize="11"
                                    Foreground="#888" Margin="0,6,0,0" />
+                        <TextBlock x:Name="TxtHwInfoUptime" FontFamily="Segoe UI" FontSize="11"
+                                   Foreground="#6FCF6F" Margin="0,4,0,0" />
 
                         <TextBlock Text="温度上限" Style="{StaticResource SectionHeader}" />
                         <Grid Margin="0,0,0,6">

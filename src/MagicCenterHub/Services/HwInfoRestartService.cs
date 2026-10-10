@@ -13,7 +13,6 @@ public sealed class HwInfoRestartService : IDisposable
     private static readonly string[] ProcessNames = ["HWiNFO64", "HWiNFO32"];
     private readonly DispatcherTimer _timer;
     private Settings? _settings;
-    private DateTime? _nextScheduledRestartAt;
 
     public HwInfoRestartService()
     {
@@ -24,17 +23,12 @@ public sealed class HwInfoRestartService : IDisposable
     public void Start(Settings settings)
     {
         _settings = settings;
-        ResetSchedule();
         _timer.Start();
     }
 
     public void UpdateSettings(Settings settings)
     {
-        bool scheduleChanged = _settings?.HwInfoScheduledRestartEnabled != settings.HwInfoScheduledRestartEnabled ||
-            _settings?.HwInfoRestartIntervalHours != settings.HwInfoRestartIntervalHours;
         _settings = settings;
-        if (scheduleChanged)
-            ResetSchedule();
     }
 
     public bool RestartNow()
@@ -47,6 +41,36 @@ public sealed class HwInfoRestartService : IDisposable
         return RestartHwInfo(executablePath);
     }
 
+    /// <summary>
+    /// 获取 HWiNFO 进程的启动时间（多个进程时取最早启动的），未运行时返回 null。
+    /// </summary>
+    public static DateTime? GetHwInfoStartTime()
+    {
+        DateTime? oldest = null;
+
+        foreach (string processName in ProcessNames)
+        {
+            foreach (Process process in Process.GetProcessesByName(processName))
+            {
+                using (process)
+                {
+                    try
+                    {
+                        DateTime startTime = process.StartTime;
+                        if (oldest == null || startTime < oldest)
+                            oldest = startTime;
+                    }
+                    catch
+                    {
+                        // 进程可能刚好退出，跳过
+                    }
+                }
+            }
+        }
+
+        return oldest;
+    }
+
     private void OnTimerTick(object? sender, EventArgs e)
     {
         if (_settings?.HwInfoScheduledRestartEnabled != true || _settings.HwInfoRestartIntervalHours <= 0)
@@ -54,23 +78,15 @@ public sealed class HwInfoRestartService : IDisposable
             return;
         }
 
-        DateTime now = DateTime.Now;
-        if (_nextScheduledRestartAt == null)
-            ResetSchedule();
-
-        if (_nextScheduledRestartAt == null || now < _nextScheduledRestartAt)
+        // 以 HWiNFO 进程实际启动时间为基准，应用重启或系统睡眠后依然对齐
+        DateTime? startTime = GetHwInfoStartTime();
+        if (startTime == null)
             return;
 
-        _nextScheduledRestartAt = now.AddHours(_settings.HwInfoRestartIntervalHours);
-        RestartHwInfo(_settings.HwInfoExecutablePath);
-    }
+        if (DateTime.Now - startTime.Value < TimeSpan.FromHours(_settings.HwInfoRestartIntervalHours))
+            return;
 
-    private void ResetSchedule()
-    {
-        _nextScheduledRestartAt = _settings?.HwInfoScheduledRestartEnabled == true &&
-                                  _settings.HwInfoRestartIntervalHours > 0
-            ? DateTime.Now.AddHours(_settings.HwInfoRestartIntervalHours)
-            : null;
+        RestartHwInfo(_settings.HwInfoExecutablePath);
     }
 
     private static bool RestartHwInfo(string? configuredPath)
