@@ -96,7 +96,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON 配置持久化
 │   ├── HwInfoProvider.cs               # HWiNFO 共享内存读取器
 │   ├── HardwareMonitorService.cs       # 1 秒定时采集
-│   ├── HwInfoRestartService.cs         # HWiNFO 定时/手动重启
+│   ├── HwInfoRestartService.cs         # HWiNFO 手动重启
 │   └── NamedPipeListenerService.cs     # 命名管道 hook 监听
 ├── Effects/
 │   ├── ILedEffect.cs                   # 灯效接口
@@ -132,10 +132,8 @@ src/MagicCenterHub/
 | PositionPresets | 窗口位置预设列表 | [] |
 | DefaultLedMode | 默认 LED 灯效模式（0-19，启动时应用，空闲时恢复） | 17 |
 | LedIdleRestoreSeconds | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 | 600 |
-| HwInfoScheduledRestartEnabled | 是否启用 HWiNFO 定时重启 | true |
-| HwInfoRestartIntervalHours | HWiNFO 重启间隔（小时） | 11 |
 
-设置窗口包含“通用”“窗口位置”“硬件监控”“LED 灯效”“关于”五个区域。LED 灯效测试位于“LED 灯效”设置下方；HWiNFO 可在“硬件监控”中手动重启，也可以按设置的小时数自动重启。
+设置窗口包含“通用”“窗口位置”“硬件监控”“LED 灯效”“关于”五个区域。LED 灯效测试位于“LED 灯效”设置下方；HWiNFO 可在“硬件监控”中手动重启。
 
 ## 前置要求
 

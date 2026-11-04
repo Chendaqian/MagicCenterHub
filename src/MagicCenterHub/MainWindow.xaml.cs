@@ -20,7 +20,6 @@ public partial class MainWindow : Window
     private const double HudPositionOffsetY = -2;
     private readonly MainViewModel _viewModel;
     private readonly HardwareMonitorService _hwMonitor;
-    private readonly HwInfoRestartService _hwInfoRestart;
     private readonly NamedPipeListenerService _pipeListener;
     private readonly Settings _settings;
     private bool _isLedRunning;
@@ -51,7 +50,6 @@ public partial class MainWindow : Window
         DataContext = _viewModel;
 
         _hwMonitor = new HardwareMonitorService();
-        _hwInfoRestart = new HwInfoRestartService();
         _pipeListener = new NamedPipeListenerService();
     }
 
@@ -70,7 +68,6 @@ public partial class MainWindow : Window
             Dispatcher.Invoke(() => _viewModel.UpdateHwInfoStatus(connected));
         };
         _hwMonitor.Start(_settings.PollIntervalMs);
-        _hwInfoRestart.Start(_settings);
 
         // 命名管道
         _pipeListener.HookMessageReceived += (msg) =>
@@ -172,7 +169,6 @@ public partial class MainWindow : Window
         StopLedAnimation();
         _viewModel.Dispose();
         _hwMonitor.Dispose();
-        _hwInfoRestart.Dispose();
         _pipeListener.Dispose();
         Application.Current.Shutdown();
     }
@@ -318,7 +314,6 @@ public partial class MainWindow : Window
     {
         Topmost = newSettings.WindowTopMost;
         _hwMonitor.UpdateInterval(newSettings.PollIntervalMs);
-        _hwInfoRestart.UpdateSettings(newSettings);
     }
 
     /// <summary>

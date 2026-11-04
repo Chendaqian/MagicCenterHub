@@ -1,40 +1,14 @@
-using MagicCenterHub.Models;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Threading;
 
 namespace MagicCenterHub.Services;
 
 /// <summary>
-/// HWiNFO 定时重启服务，避免免费版运行时间达到限制后共享内存失效。
+/// HWiNFO 重启辅助，提供进程启动时间查询、可执行文件识别与手动重启。
 /// </summary>
-public sealed class HwInfoRestartService : IDisposable
+public sealed class HwInfoRestartService
 {
     private static readonly string[] ProcessNames = ["HWiNFO64", "HWiNFO32"];
-    private readonly DispatcherTimer _timer;
-    private Settings? _settings;
-
-    public HwInfoRestartService()
-    {
-        _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
-        _timer.Tick += OnTimerTick;
-    }
-
-    public void Start(Settings settings)
-    {
-        _settings = settings;
-        _timer.Start();
-    }
-
-    public void UpdateSettings(Settings settings)
-    {
-        _settings = settings;
-    }
-
-    public bool RestartNow()
-    {
-        return RestartHwInfo(_settings?.HwInfoExecutablePath);
-    }
 
     public bool RestartNow(string? executablePath)
     {
@@ -69,24 +43,6 @@ public sealed class HwInfoRestartService : IDisposable
         }
 
         return oldest;
-    }
-
-    private void OnTimerTick(object? sender, EventArgs e)
-    {
-        if (_settings?.HwInfoScheduledRestartEnabled != true || _settings.HwInfoRestartIntervalHours <= 0)
-        {
-            return;
-        }
-
-        // 以 HWiNFO 进程实际启动时间为基准，应用重启或系统睡眠后依然对齐
-        DateTime? startTime = GetHwInfoStartTime();
-        if (startTime == null)
-            return;
-
-        if (DateTime.Now - startTime.Value < TimeSpan.FromHours(_settings.HwInfoRestartIntervalHours))
-            return;
-
-        RestartHwInfo(_settings.HwInfoExecutablePath);
     }
 
     private static bool RestartHwInfo(string? configuredPath)
@@ -214,12 +170,5 @@ public sealed class HwInfoRestartService : IDisposable
             return Path.GetFullPath(configuredPath.Trim());
 
         return FindHWiNFOExecutable();
-    }
-
-    public void Dispose()
-    {
-        _timer.Stop();
-        _timer.Tick -= OnTimerTick;
-        GC.SuppressFinalize(this);
     }
 }

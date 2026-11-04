@@ -99,7 +99,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON config persistence
 │   ├── HwInfoProvider.cs               # HWiNFO shared memory reader
 │   ├── HardwareMonitorService.cs       # 1-second polling
-│   ├── HwInfoRestartService.cs         # Scheduled/manual HWiNFO restart
+│   ├── HwInfoRestartService.cs         # Manual HWiNFO restart
 │   └── NamedPipeListenerService.cs     # Named pipe hook listener
 ├── Effects/
 │   ├── ILedEffect.cs                   # LED effect interface
@@ -135,10 +135,8 @@ Config file path: `%AppData%\MagicCenterHub\settings.json`
 | PositionPresets | Window position presets list | [] |
 | DefaultLedMode | Default LED effect mode (0-19, applied on startup and idle restore) | 17 |
 | LedIdleRestoreSeconds | LED idle restore time in seconds (0 = disabled) | 600 |
-| HwInfoScheduledRestartEnabled | Enable scheduled HWiNFO restart | true |
-| HwInfoRestartIntervalHours | HWiNFO restart interval in hours | 11 |
 
-The Settings window provides five sections: General, Window Position, Hardware Monitoring, LED Effects, and About. LED effect testing is available below the LED effect settings. HWiNFO can be restarted manually from the Hardware Monitoring section or automatically at the configured interval.
+The Settings window provides five sections: General, Window Position, Hardware Monitoring, LED Effects, and About. LED effect testing is available below the LED effect settings. HWiNFO can be restarted manually from the Hardware Monitoring section.
 
 ## Prerequisites
 

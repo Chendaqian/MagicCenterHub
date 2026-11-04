@@ -115,13 +115,6 @@ public partial class SettingsWindow : Window
         TxtHwInfoPath.Text = string.IsNullOrWhiteSpace(_settings.HwInfoExecutablePath)
             ? HwInfoRestartService.FindExecutablePath() ?? string.Empty
             : _settings.HwInfoExecutablePath;
-        ChkHwInfoScheduledRestart.IsChecked = _settings.HwInfoScheduledRestartEnabled;
-        int restartInterval = _settings.HwInfoRestartIntervalHours;
-        CmbHwInfoRestartInterval.SelectedIndex = CmbHwInfoRestartInterval.Items.Cast<ComboBoxItem>()
-            .ToList()
-            .FindIndex(item => item.Tag is string tag && int.TryParse(tag, out int hours) && hours == restartInterval);
-        if (CmbHwInfoRestartInterval.SelectedIndex < 0)
-            CmbHwInfoRestartInterval.SelectedIndex = 6;
 
         // 温度上限
         TxtCpuMaxTemp.Text = _settings.CpuMaxTempC.ToString("F0");
@@ -331,8 +324,6 @@ public partial class SettingsWindow : Window
         _settings.PositionPresets = defaults.PositionPresets;
         _settings.DefaultLedMode = defaults.DefaultLedMode;
         _settings.LedIdleRestoreSeconds = defaults.LedIdleRestoreSeconds;
-        _settings.HwInfoScheduledRestartEnabled = defaults.HwInfoScheduledRestartEnabled;
-        _settings.HwInfoRestartIntervalHours = defaults.HwInfoRestartIntervalHours;
         _settings.HwInfoExecutablePath = defaults.HwInfoExecutablePath;
 
         LoadValues();
@@ -380,12 +371,6 @@ public partial class SettingsWindow : Window
         if (int.TryParse(TxtPollInterval.Text, out int pollMs) && pollMs >= 500)
             _settings.PollIntervalMs = pollMs;
         _settings.HwInfoExecutablePath = TxtHwInfoPath.Text.Trim();
-        _settings.HwInfoScheduledRestartEnabled = ChkHwInfoScheduledRestart.IsChecked == true;
-        if (CmbHwInfoRestartInterval.SelectedItem is ComboBoxItem selectedInterval &&
-            int.TryParse(selectedInterval.Tag?.ToString(), out int restartInterval))
-        {
-            _settings.HwInfoRestartIntervalHours = restartInterval;
-        }
 
         // 温度上限
         if (double.TryParse(TxtCpuMaxTemp.Text, out double cpuMax))
@@ -433,7 +418,7 @@ public partial class SettingsWindow : Window
     }
 
     /// <summary>
-    /// 刷新 HWiNFO 运行状态显示（已运行时长 + 预计自动重启时间）
+    /// 刷新 HWiNFO 运行时长显示
     /// </summary>
     private void RefreshHwInfoUptime()
     {
@@ -445,32 +430,8 @@ public partial class SettingsWindow : Window
             return;
         }
 
-        // 显示界面上的当前勾选/间隔值，未保存也能即时预览
-        bool enabled = ChkHwInfoScheduledRestart.IsChecked == true;
-        int intervalHours = CmbHwInfoRestartInterval.SelectedItem is ComboBoxItem selectedInterval &&
-            int.TryParse(selectedInterval.Tag?.ToString(), out int hours)
-            ? hours
-            : _settings.HwInfoRestartIntervalHours;
-
-        string uptimeText = FormatUptime(DateTime.Now - startTime.Value);
-        if (!enabled || intervalHours <= 0)
-        {
-            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，定时重启未启用";
-            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
-            return;
-        }
-
-        DateTime nextRestartAt = startTime.Value.AddHours(intervalHours);
-        if (nextRestartAt > DateTime.Now)
-        {
-            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，预计 {nextRestartAt:HH:mm} 自动重启";
-            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
-        }
-        else
-        {
-            TxtHwInfoUptime.Text = $"HWiNFO 已运行 {uptimeText}，已达重启间隔，即将自动重启";
-            TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0xF0, 0xA8, 0x40));
-        }
+        TxtHwInfoUptime.Text = $"HWiNFO 已运行 {FormatUptime(DateTime.Now - startTime.Value)}";
+        TxtHwInfoUptime.Foreground = new SolidColorBrush(Color.FromRgb(0x6F, 0xCF, 0x6F));
     }
 
     /// <summary>
@@ -494,7 +455,7 @@ public partial class SettingsWindow : Window
         {
             _settings.HwInfoExecutablePath = TxtHwInfoPath.Text.Trim();
             SettingsService.Save(_settings);
-            using HwInfoRestartService service = new();
+            HwInfoRestartService service = new();
             if (service.RestartNow(_settings.HwInfoExecutablePath))
             {
                 ShowStatus("HWiNFO 已重启，正在重启程序...");

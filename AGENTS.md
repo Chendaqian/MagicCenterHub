@@ -26,8 +26,6 @@ Windows 桌面系统监控悬浮窗，实时显示硬件指标 + Claude Code hoo
 | PositionPresets | list | [] | 窗口位置预设 |
 | DefaultLedMode | int | 17 | 默认 LED 灯效模式（启动时应用，空闲时恢复） |
 | LedIdleRestoreSeconds | int | 600 | LED 灯效空闲恢复时间（秒），0 表示不自动恢复 |
-| HwInfoScheduledRestartEnabled | bool | true | 是否启用 HWiNFO 定时重启 |
-| HwInfoRestartIntervalHours | int | 11 | HWiNFO 重启间隔（小时） |
 
 ### ColorThresholds
 | 字段 | 默认值 | 说明 |
@@ -55,7 +53,7 @@ src/MagicCenterHub/
 │   ├── SettingsService.cs              # JSON 配置持久化（%AppData%）
 │   ├── HwInfoProvider.cs               # HWiNFO v2 共享内存读取器
 │   ├── HardwareMonitorService.cs       # 1 秒定时采集 + 重试检测
-│   ├── HwInfoRestartService.cs         # HWiNFO 定时/手动重启
+│   ├── HwInfoRestartService.cs         # HWiNFO 手动重启
 │   └── NamedPipeListenerService.cs     # 命名管道 hook 监听
 ├── Effects/
 │   ├── ILedEffect.cs                   # 灯效接口（LedColor 结构体）
